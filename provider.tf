@@ -7,6 +7,12 @@ terraform {
       version = "~> 2.9"
     }
   }
+
+  # Backend local pour stocker le state sur le self-hosted runner
+  # Chemin relatif au répertoire de travail du workflow
+  backend "local" {
+    path = "terraform-states/terraform.tfstate"
+  }
 }
 
 provider "proxmox" {
