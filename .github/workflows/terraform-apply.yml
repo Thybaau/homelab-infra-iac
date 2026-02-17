@@ -1,0 +1,89 @@
+name: Terraform Apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      ssh_public_key:
+        description: "Clé SSH publique pour les VMs"
+        required: true
+        type: string
+
+env:
+  TF_VAR_proxmox_api_url: ${{ secrets.PM_API_URL }}
+  TF_VAR_proxmox_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
+  TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
+  TF_VAR_ssh_public_key: ${{ inputs.ssh_public_key }}
+
+jobs:
+  apply:
+    name: Terraform Apply
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+
+      - name: Create State Directory
+        run: |
+          mkdir -p terraform-states
+          mkdir -p terraform-backups
+          echo "📁 Répertoires créés dans $(pwd)"
+          echo "   - State: $(pwd)/terraform-states"
+          echo "   - Backups: $(pwd)/terraform-backups"
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+      - name: Backup State File
+        if: always()
+        run: |
+          BACKUP_DIR="terraform-backups"
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+          if [ -f "terraform-states/terraform.tfstate" ]; then
+            cp terraform-states/terraform.tfstate \
+               $BACKUP_DIR/terraform.tfstate.$TIMESTAMP
+            
+            # Garder seulement les 10 derniers backups
+            cd $BACKUP_DIR
+            ls -t terraform.tfstate.* 2>/dev/null | tail -n +11 | xargs -r rm
+            
+            echo "✅ State sauvegardé : terraform.tfstate.$TIMESTAMP"
+            echo "📊 Backups disponibles :"
+            ls -lh terraform.tfstate.* 2>/dev/null || echo "Aucun backup"
+          else
+            echo "⚠️  Aucun state à sauvegarder"
+          fi
+
+      - name: Terraform Output
+        id: output
+        run: terraform output -json
+
+      - name: Display VMs Info
+        run: |
+          echo "### 🚀 VMs déployées avec succès!"
+          echo ""
+          echo "**VMs K3s:**"
+          echo '${{ steps.output.outputs.stdout }}' | jq -r '.k3s_ips.value[]'
+          echo ""
+          echo "**VM OpenClaw:**"
+          echo '${{ steps.output.outputs.stdout }}' | jq -r '.openclaw_vm.value.ip_address'
+
+      - name: Upload State as Artifact (backup secondaire)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: terraform-state-${{ github.run_number }}
+          path: terraform-states/terraform.tfstate
+          retention-days: 90

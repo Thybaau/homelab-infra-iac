@@ -1,0 +1,69 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_destroy:
+        description: 'Tapez "DESTROY" pour confirmer la destruction'
+        required: true
+        type: string
+
+env:
+  TF_VAR_proxmox_api_url: ${{ secrets.PM_API_URL }}
+  TF_VAR_proxmox_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
+  TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
+
+jobs:
+  destroy:
+    name: Terraform Destroy
+    runs-on: self-hosted # OBLIGATOIRE: Proxmox n'est pas accessible depuis Internet
+
+    steps:
+      - name: Validate Confirmation
+        run: |
+          if [ "${{ inputs.confirm_destroy }}" != "DESTROY" ]; then
+            echo "❌ Confirmation invalide. Destruction annulée."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+
+      - name: Verify State Exists
+        run: |
+          if [ ! -f "terraform-states/terraform.tfstate" ]; then
+            echo "❌ Aucun state trouvé. Rien à détruire."
+            exit 1
+          fi
+          echo "✅ State trouvé, préparation de la destruction..."
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+
+      - name: Backup State Before Deletion
+        if: always()
+        run: |
+          BACKUP_DIR="terraform-backups"
+          mkdir -p $BACKUP_DIR
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+          if [ -f "terraform-states/terraform.tfstate" ]; then
+            cp terraform-states/terraform.tfstate \
+               $BACKUP_DIR/terraform.tfstate.destroyed.$TIMESTAMP || true
+            echo "✅ State sauvegardé avant suppression"
+          fi
+
+      - name: Confirm Destruction
+        run: |
+          echo "### 🗑️ Infrastructure détruite avec succès"
+          echo "Toutes les VMs ont été supprimées de Proxmox."
+          echo ""
+          echo "⚠️  Le state file a été conservé dans les backups au cas où."
