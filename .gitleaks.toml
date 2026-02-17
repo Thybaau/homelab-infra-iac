@@ -1,0 +1,51 @@
+# Configuration Gitleaks pour la détection de secrets
+
+title = "Gitleaks Configuration for Proxmox Terraform"
+
+# Règles personnalisées pour détecter les secrets Proxmox
+[[rules]]
+id = "proxmox-api-token"
+description = "Proxmox API Token Secret"
+regex = '''[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'''
+tags = ["proxmox", "api", "token"]
+
+[[rules]]
+id = "proxmox-api-url"
+description = "Proxmox API URL with credentials"
+regex = '''https?://[^:]+:[^@]+@[^/]+/api2/json'''
+tags = ["proxmox", "api", "credentials"]
+
+[[rules]]
+id = "ssh-private-key"
+description = "SSH Private Key"
+regex = '''-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----'''
+tags = ["ssh", "private-key"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_-]?key|apikey|api[_-]?secret)['":\s]*[=:]\s*['"][0-9a-zA-Z\-_]{20,}['"]'''
+tags = ["api", "key"]
+
+# Fichiers à exclure du scan
+[allowlist]
+paths = [
+    '''.terraform/''',
+    '''.git/''',
+    '''terraform.tfstate''',
+    '''terraform.tfstate.backup''',
+    '''*.tfvars.example''',
+    '''README.md''',
+]
+
+# Patterns à ignorer (faux positifs)
+regexes = [
+    '''example\.com''',
+    '''your-secret-token''',
+    '''votre-secret-token''',
+    '''xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx''',
+    '''AAAAB3NzaC1yc2EAAAADAQABAAABAQC\.\.\.''',
+]
+
+# Commits à ignorer
+commits = []

@@ -1,0 +1,27 @@
+# Configuration tfsec pour le scan de sécurité Terraform
+
+# Sévérité minimale pour échouer le build
+minimum_severity: MEDIUM
+
+# Règles à exclure (avec justification)
+exclude:
+  # Proxmox utilise des certificats auto-signés en homelab
+  - AVD-GEN-0001  # TLS insecure skip verify
+
+# Règles personnalisées
+severity_overrides:
+  # Augmenter la sévérité pour les secrets en dur
+  GEN003: CRITICAL
+  GEN002: CRITICAL
+
+# Ignorer certains fichiers
+exclude_paths:
+  - .terraform/
+  - .git/
+
+# Format de sortie
+format: default
+
+# Activer les checks supplémentaires
+include_passed: false
+include_ignored: false

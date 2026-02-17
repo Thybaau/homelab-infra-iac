@@ -1,0 +1,209 @@
+name: Security Scan
+
+on:
+    push:
+        branches:
+            - main
+            - develop
+    pull_request:
+        branches:
+            - main
+            - develop
+    workflow_dispatch:
+    schedule:
+        - cron: "0 2 * * 1" # Tous les lundis à 2h du matin
+
+jobs:
+    secret-scan:
+        name: Scan des Secrets
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Récupère tout l'historique pour scanner tous les commits
+
+            - name: TruffleHog Secret Scan
+              uses: trufflesecurity/trufflehog@main
+              with:
+                  path: ./
+                  base: ${{ github.event.repository.default_branch }}
+                  head: HEAD
+                  extra_args: --debug --only-verified
+
+            - name: Gitleaks Secret Scan
+              uses: gitleaks/gitleaks-action@v2
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+    terraform-security:
+        name: Terraform Security Scan
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: 1.5.0
+
+            - name: Terraform Format Check
+              run: terraform fmt -check -recursive
+              continue-on-error: true
+
+            - name: Terraform Init
+              run: terraform init -backend=false
+
+            - name: Terraform Validate
+              run: terraform validate
+
+            - name: tfsec Security Scan
+              uses: aquasecurity/tfsec-action@v1.0.3
+              with:
+                  soft_fail: false
+                  format: sarif
+                  additional_args: --minimum-severity MEDIUM
+
+            - name: Upload tfsec SARIF
+              uses: github/codeql-action/upload-sarif@v3
+              if: always()
+              with:
+                  sarif_file: results.sarif
+
+            - name: Checkov Terraform Scan
+              uses: bridgecrewio/checkov-action@master
+              with:
+                  directory: .
+                  framework: terraform
+                  output_format: cli
+                  soft_fail: true
+                  download_external_modules: false
+
+    dependency-scan:
+        name: Dependency Vulnerability Scan
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Run Trivy vulnerability scanner
+              uses: aquasecurity/trivy-action@master
+              with:
+                  scan-type: "config"
+                  scan-ref: "."
+                  format: "sarif"
+                  output: "trivy-results.sarif"
+                  severity: "CRITICAL,HIGH,MEDIUM"
+
+            - name: Upload Trivy results to GitHub Security
+              uses: github/codeql-action/upload-sarif@v3
+              if: always()
+              with:
+                  sarif_file: "trivy-results.sarif"
+
+    workflow-security:
+        name: GitHub Actions Workflow Security
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Validate GitHub Actions Workflows
+              run: |
+                  echo "🔍 Vérification des workflows GitHub Actions..."
+
+                  # Vérifier que tous les workflows utilisent des versions pinnées
+                  echo "Vérification des versions d'actions pinnées..."
+                  if grep -r "uses:.*@main\|uses:.*@master" .github/workflows/ --exclude="security-scan.yml"; then
+                    echo "⚠️  ATTENTION: Certaines actions utilisent @main ou @master au lieu de versions spécifiques"
+                    echo "Recommandation: Utilisez des versions spécifiques (ex: @v3) pour la reproductibilité"
+                  else
+                    echo "✅ Toutes les actions utilisent des versions spécifiques"
+                  fi
+
+                  # Vérifier l'utilisation de secrets
+                  echo ""
+                  echo "Vérification de l'utilisation des secrets..."
+                  if grep -r "secrets\." .github/workflows/ | grep -v "GITHUB_TOKEN"; then
+                    echo "✅ Secrets détectés dans les workflows (utilisation correcte)"
+                  fi
+
+                  # Vérifier les permissions des workflows
+                  echo ""
+                  echo "Vérification des permissions des workflows..."
+                  for workflow in .github/workflows/*.yml; do
+                    if ! grep -q "permissions:" "$workflow"; then
+                      echo "⚠️  $workflow: Aucune permission explicite définie"
+                    fi
+                  done
+
+    security-report:
+        name: Générer Rapport de Sécurité
+        runs-on: ubuntu-latest
+        needs:
+            [
+                secret-scan,
+                terraform-security,
+                dependency-scan,
+                workflow-security,
+            ]
+        if: always()
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Generate Security Report
+              run: |
+                  echo "# 🔒 Rapport de Sécurité" > security-report.md
+                  echo "" >> security-report.md
+                  echo "**Date**: $(date)" >> security-report.md
+                  echo "**Commit**: ${{ github.sha }}" >> security-report.md
+                  echo "**Branch**: ${{ github.ref_name }}" >> security-report.md
+                  echo "" >> security-report.md
+
+                  echo "## Résultats des Scans" >> security-report.md
+                  echo "" >> security-report.md
+                  echo "- ✅ Scan des secrets: ${{ needs.secret-scan.result }}" >> security-report.md
+                  echo "- ✅ Scan Terraform: ${{ needs.terraform-security.result }}" >> security-report.md
+                  echo "- ✅ Scan des dépendances: ${{ needs.dependency-scan.result }}" >> security-report.md
+                  echo "- ✅ Scan des workflows: ${{ needs.workflow-security.result }}" >> security-report.md
+                  echo "" >> security-report.md
+
+                  echo "## Recommandations" >> security-report.md
+                  echo "" >> security-report.md
+                  echo "1. Vérifiez les résultats dans l'onglet Security de GitHub" >> security-report.md
+                  echo "2. Corrigez les vulnérabilités critiques et hautes en priorité" >> security-report.md
+                  echo "3. Ne commitez jamais de secrets en dur dans le code" >> security-report.md
+                  echo "4. Utilisez GitHub Secrets pour les informations sensibles" >> security-report.md
+                  echo "5. Maintenez Terraform et les providers à jour" >> security-report.md
+
+                  cat security-report.md
+
+            - name: Upload Security Report
+              uses: actions/upload-artifact@v4
+              with:
+                  name: security-report
+                  path: security-report.md
+                  retention-days: 90
+
+            - name: Comment PR with Security Status
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const fs = require('fs');
+                      const report = fs.readFileSync('security-report.md', 'utf8');
+
+                      github.rest.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: report
+                      });
