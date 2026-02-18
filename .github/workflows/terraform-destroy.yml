@@ -61,7 +61,7 @@ jobs:
         run: |
           BACKUP_DIR="/var/lib/terraform/backups"
           STATE_FILE="/var/lib/terraform/states/homelab-infra.tfstate"
-          sudo mkdir -p "$BACKUP_DIR"
+          mkdir -p "$BACKUP_DIR"
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
           if [ -f "$STATE_FILE" ]; then
