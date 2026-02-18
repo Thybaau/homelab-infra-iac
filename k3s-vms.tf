@@ -13,7 +13,6 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   memory  = var.k3s_vm_memory
   cores   = var.k3s_vm_cores
   sockets = 1
-  cpu     = "host"
 
   # Démarrage automatique
   onboot  = true
@@ -21,6 +20,7 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
 
   # Disque
   disk {
+    slot    = 0
     type    = "scsi"
     storage = var.storage_pool
     size    = var.k3s_vm_disk_size
@@ -29,11 +29,11 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   }
 
   # Cloud-Init
-  os_type                 = "cloud-init"
-  cloudinit_cdrom_storage = var.storage_pool
+  os_type = "cloud-init"
 
   # Réseau
   network {
+    id     = 0
     model  = "virtio"
     bridge = var.network_bridge
   }

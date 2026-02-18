@@ -11,7 +11,6 @@ resource "proxmox_vm_qemu" "openclaw" {
   memory  = var.openclaw_vm_memory
   cores   = var.openclaw_vm_cores
   sockets = 1
-  cpu     = "host"
 
   # Démarrage automatique
   onboot  = true
@@ -19,6 +18,7 @@ resource "proxmox_vm_qemu" "openclaw" {
 
   # Disque
   disk {
+    slot    = 0
     type    = "scsi"
     storage = var.storage_pool
     size    = var.openclaw_vm_disk_size
@@ -27,11 +27,11 @@ resource "proxmox_vm_qemu" "openclaw" {
   }
 
   # Cloud-Init
-  os_type                 = "cloud-init"
-  cloudinit_cdrom_storage = var.storage_pool
+  os_type = "cloud-init"
 
   # Réseau
   network {
+    id     = 0
     model  = "virtio"
     bridge = var.network_bridge
   }
