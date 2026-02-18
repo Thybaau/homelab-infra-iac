@@ -27,7 +27,7 @@ variable "proxmox_api_token_secret" {
 variable "proxmox_node" {
   type        = string
   description = "Nom du nœud Proxmox sur lequel déployer les VMs"
-  default     = "pve"
+  default     = "pve01"
 }
 
 variable "storage_pool" {
