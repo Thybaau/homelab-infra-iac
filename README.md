@@ -56,7 +56,7 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 
 | Variable | Type | Défaut | Description |
 |----------|------|--------|-------------|
-| `ssh_public_key` | string | - | Clé SSH publique pour l'accès aux VMs |
+| `ssh_public_keys` | string | - | Clés SSH publiques pour l'accès aux VMs (une par ligne) |
 | `k3s_vm_user` | string | `"k3s"` | Utilisateur admin des VMs K3s |
 | `openclaw_vm_user` | string | `"admin"` | Utilisateur admin de la VM OpenClaw |
 | `template_name` | string | `"ubuntu-22.04-cloudimg"` | Nom du template Ubuntu dans Proxmox |
@@ -145,15 +145,9 @@ Résumé global de l'infrastructure :
 
 **Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Apply** → **Run workflow**
 
-**Paramètres requis** :
-- `ssh_public_key` : Votre clé SSH publique (contenu du fichier `~/.ssh/id_rsa.pub`)
+**Paramètres** : Aucun (les clés SSH sont automatiquement récupérées depuis le secret `SSH_PUBLIC_KEYS`)
 
 **Résultat** : Les VMs sont créées dans Proxmox et les IPs sont affichées dans les logs.
-
-**Exemple de clé SSH** :
-```
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@hostname
-```
 
 ### 3. Terraform Drift Detection
 
@@ -227,8 +221,11 @@ proxmox_api_url          = "PROXMOX_INSTANCE_URL"
 proxmox_api_token_id     = "TOKEN_ID"
 proxmox_api_token_secret = "votre-secret-token"
 
-# Clé SSH
-ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@hostname"
+# Clés SSH (plusieurs clés possibles)
+ssh_public_keys = <<-EOT
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOaN2/18LzwHIvnwqU+uAwMskUh0KGNyp5hE8dzQjJrR user1@hostname
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINpfp++eT8Aw3tQJkHHTeTA+murV5sOMcx2GlFDwNcfF user2@hostname
+EOT
 ```
 
 ⚠️ **Ne commitez jamais ce fichier !** Il contient des informations sensibles.
