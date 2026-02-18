@@ -12,7 +12,6 @@ env:
   TF_VAR_proxmox_api_url: ${{ secrets.PM_API_URL }}
   TF_VAR_proxmox_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
   TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
-  TF_VAR_ssh_public_keys: ${{ secrets.SSH_PUBLIC_KEYS }}
 
 jobs:
   destroy:
@@ -34,6 +33,14 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.0
+
+      - name: Decode SSH Keys
+        run: |
+          # Décoder les clés SSH URL-encodées et gérer les multi-lignes
+          DECODED_KEYS=$(echo "${{ secrets.SSH_PUBLIC_KEYS }}" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
+          echo "TF_VAR_ssh_public_keys<<EOF" >> $GITHUB_ENV
+          echo "$DECODED_KEYS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Verify State Exists
         run: |
