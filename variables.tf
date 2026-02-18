@@ -143,5 +143,5 @@ variable "openclaw_vm_user" {
 variable "template_name" {
   type        = string
   description = "Nom du template Ubuntu Cloud-Init dans Proxmox à cloner pour les VMs"
-  default     = "ubuntu-22.04-cloudimg"
+  default     = "ubuntu-22.04-cloudinit"
 }
