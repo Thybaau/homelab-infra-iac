@@ -33,8 +33,8 @@ openclaw_vm_ip        = "OPENCLAW_VM_IP"
 # === Cloud-Init ===
 # Remplacez par vos clés SSH publiques (une par ligne, contenu dans ~/.ssh)
 ssh_public_keys = <<-EOT
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOaN2/18LzwHIvnwqU+uAwMskUh0KGNyp5hE8dzQjJrR user1@hostname
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINpfp++eT8Aw3tQJkHHTeTA+murV5sOMcx2GlFDwNcfF user2@hostname
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOaN2/18LzwHIv9wqU+uAwMskUh0KLNyp5hE8dzUjJrR user1@hostname
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINpfp++eT8Aw5tQJkHHTeTZ+murVWsOMcx2GlFDwNcfF user2@hostname
 EOT
 k3s_vm_user      = "k3s"
 openclaw_vm_user = "openclaw"
