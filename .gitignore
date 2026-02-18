@@ -1,5 +1,6 @@
 # Local .terraform directories
 .terraform/
+.terraform.lock.hcl
 
 # .tfstate files
 *.tfstate
@@ -64,6 +65,7 @@ desktop.ini
 *.swp
 *.swo
 *.swn
+.kiro
 .project
 .settings/
 
