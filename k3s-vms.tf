@@ -2,7 +2,7 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   count = var.k3s_count
 
   # Identification
-  name        = "k3s-node-${format("%02d", count.index + 1)}"
+  name        = count.index == 0 ? "k3s-master" : "k3s-worker-${format("%02d", count.index)}"
   target_node = var.proxmox_node
   vmid        = 200 + count.index
 
@@ -44,7 +44,7 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   nameserver = var.network_dns
 
   # Cloud-Init - Configuration utilisateur
-  ciuser  = var.vm_user
+  ciuser  = var.k3s_vm_user
   sshkeys = var.ssh_public_key
 
   # Lifecycle

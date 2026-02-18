@@ -128,9 +128,15 @@ variable "ssh_public_key" {
   sensitive   = false
 }
 
-variable "vm_user" {
+variable "k3s_vm_user" {
   type        = string
-  description = "Nom d'utilisateur admin créé sur les VMs via Cloud-Init"
+  description = "Nom d'utilisateur admin créé sur les VMs K3s via Cloud-Init"
+  default     = "k3s"
+}
+
+variable "openclaw_vm_user" {
+  type        = string
+  description = "Nom d'utilisateur admin créé sur la VM OpenClaw via Cloud-Init"
   default     = "admin"
 }
 

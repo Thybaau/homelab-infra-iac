@@ -42,7 +42,7 @@ resource "proxmox_vm_qemu" "openclaw" {
   nameserver = var.network_dns
 
   # Cloud-Init - Configuration utilisateur
-  ciuser  = var.vm_user
+  ciuser  = var.openclaw_vm_user
   sshkeys = var.ssh_public_key
 
   # Lifecycle
