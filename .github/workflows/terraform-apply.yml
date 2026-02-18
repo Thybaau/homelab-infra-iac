@@ -69,11 +69,9 @@ jobs:
         run: |
           echo "### 🚀 VMs déployées avec succès!"
           echo ""
-          echo "**VMs K3s:**"
-          echo '${{ steps.output.outputs.stdout }}' | jq -r '.k3s_ips.value[]'
+          terraform output k3s_ips
           echo ""
-          echo "**VM OpenClaw:**"
-          echo '${{ steps.output.outputs.stdout }}' | jq -r '.openclaw_vm.value.ip_address'
+          terraform output openclaw_vm
 
       - name: Upload State as Artifact (backup secondaire)
         uses: actions/upload-artifact@v4
