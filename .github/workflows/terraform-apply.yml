@@ -30,15 +30,6 @@ jobs:
           echo "$DECODED_KEYS" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Create State Directory
-        run: |
-          sudo mkdir -p /var/lib/terraform/states
-          sudo mkdir -p /var/lib/terraform/backups
-          sudo chown -R github:github /var/lib/terraform
-          echo "📁 Répertoires créés"
-          echo "   - State: /var/lib/terraform/states"
-          echo "   - Backups: /var/lib/terraform/backups"
-
       - name: Terraform Init
         run: terraform init
 

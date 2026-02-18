@@ -268,7 +268,19 @@ Terraform vous demandera confirmation. Tapez `yes` pour continuer.
 
 Le state Terraform est stocké de manière persistante sur le runner dans `/var/lib/terraform/states/homelab-infra.tfstate`.
 
-**Aucune configuration manuelle nécessaire !** Les workflows créent automatiquement les répertoires nécessaires.
+**Configuration initiale requise (une seule fois):**
+
+Sur le runner GitHub Actions, exécutez ces commandes en tant que root:
+
+```bash
+# Créer les répertoires pour le state et les backups
+sudo mkdir -p /var/lib/terraform/states
+sudo mkdir -p /var/lib/terraform/backups
+
+# Donner les permissions à l'utilisateur du runner (généralement 'github')
+sudo chown -R github:github /var/lib/terraform
+sudo chmod -R 755 /var/lib/terraform
+```
 
 **Backups automatiques** :
 - À chaque `terraform apply`, le state est sauvegardé avec un timestamp dans `/var/lib/terraform/backups/`
@@ -295,8 +307,8 @@ ssh github@<runner-ip>
 ls -lh /var/lib/terraform/backups/
 
 # Restaurer un backup spécifique
-sudo cp /var/lib/terraform/backups/terraform.tfstate.20260217-143022 \
-        /var/lib/terraform/states/homelab-infra.tfstate
+cp /var/lib/terraform/backups/terraform.tfstate.20260217-143022 \
+   /var/lib/terraform/states/homelab-infra.tfstate
 ```
 
 ## 📊 Architecture de l'Infrastructure
