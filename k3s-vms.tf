@@ -49,7 +49,7 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
 
   # Cloud-Init - Configuration utilisateur
   ciuser  = var.k3s_vm_user
-  sshkeys = var.ssh_public_keys
+  sshkeys = urldecode(var.ssh_public_keys)
 
   # Lifecycle
   lifecycle {
