@@ -2,17 +2,12 @@ name: Terraform Apply
 
 on:
   workflow_dispatch:
-    inputs:
-      ssh_public_key:
-        description: "Clé SSH publique pour les VMs"
-        required: true
-        type: string
 
 env:
   TF_VAR_proxmox_api_url: ${{ secrets.PM_API_URL }}
   TF_VAR_proxmox_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
   TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
-  TF_VAR_ssh_public_key: ${{ inputs.ssh_public_key }}
+  TF_VAR_ssh_public_keys: ${{ secrets.SSH_PUBLIC_KEYS }}
 
 jobs:
   apply:
