@@ -37,7 +37,7 @@ jobs:
 
       - name: Verify State Exists
         run: |
-          if [ ! -f "terraform-states/terraform.tfstate" ]; then
+          if [ ! -f "/var/lib/terraform/states/homelab-infra.tfstate" ]; then
             echo "❌ Aucun state trouvé. Rien à détruire."
             exit 1
           fi
@@ -52,13 +52,14 @@ jobs:
       - name: Backup State Before Deletion
         if: always()
         run: |
-          BACKUP_DIR="terraform-backups"
-          mkdir -p $BACKUP_DIR
+          BACKUP_DIR="/var/lib/terraform/backups"
+          STATE_FILE="/var/lib/terraform/states/homelab-infra.tfstate"
+          sudo mkdir -p "$BACKUP_DIR"
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
-          if [ -f "terraform-states/terraform.tfstate" ]; then
-            cp terraform-states/terraform.tfstate \
-               $BACKUP_DIR/terraform.tfstate.destroyed.$TIMESTAMP || true
+          if [ -f "$STATE_FILE" ]; then
+            cp "$STATE_FILE" \
+               "$BACKUP_DIR/terraform.tfstate.destroyed.$TIMESTAMP" || true
             echo "✅ State sauvegardé avant suppression"
           fi
 

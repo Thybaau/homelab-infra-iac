@@ -9,9 +9,9 @@ terraform {
   }
 
   # Backend local pour stocker le state sur le self-hosted runner
-  # Chemin relatif au répertoire de travail du workflow
+  # Chemin absolu persistant en dehors du workspace
   backend "local" {
-    path = "terraform-states/terraform.tfstate"
+    path = "/var/lib/terraform/states/homelab-infra.tfstate"
   }
 }
 

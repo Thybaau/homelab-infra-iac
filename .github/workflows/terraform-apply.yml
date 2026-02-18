@@ -25,11 +25,12 @@ jobs:
 
       - name: Create State Directory
         run: |
-          mkdir -p terraform-states
-          mkdir -p terraform-backups
-          echo "📁 Répertoires créés dans $(pwd)"
-          echo "   - State: $(pwd)/terraform-states"
-          echo "   - Backups: $(pwd)/terraform-backups"
+          sudo mkdir -p /var/lib/terraform/states
+          sudo mkdir -p /var/lib/terraform/backups
+          sudo chown -R github:github /var/lib/terraform
+          echo "📁 Répertoires créés"
+          echo "   - State: /var/lib/terraform/states"
+          echo "   - Backups: /var/lib/terraform/backups"
 
       - name: Terraform Init
         run: terraform init
@@ -43,15 +44,16 @@ jobs:
       - name: Backup State File
         if: always()
         run: |
-          BACKUP_DIR="terraform-backups"
+          BACKUP_DIR="/var/lib/terraform/backups"
+          STATE_FILE="/var/lib/terraform/states/homelab-infra.tfstate"
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
-          if [ -f "terraform-states/terraform.tfstate" ]; then
-            cp terraform-states/terraform.tfstate \
-               $BACKUP_DIR/terraform.tfstate.$TIMESTAMP
+          if [ -f "$STATE_FILE" ]; then
+            cp "$STATE_FILE" \
+               "$BACKUP_DIR/terraform.tfstate.$TIMESTAMP"
             
             # Garder seulement les 10 derniers backups
-            cd $BACKUP_DIR
+            cd "$BACKUP_DIR"
             ls -t terraform.tfstate.* 2>/dev/null | tail -n +11 | xargs -r rm
             
             echo "✅ State sauvegardé : terraform.tfstate.$TIMESTAMP"
@@ -80,5 +82,5 @@ jobs:
         if: always()
         with:
           name: terraform-state-${{ github.run_number }}
-          path: terraform-states/terraform.tfstate
+          path: /var/lib/terraform/states/homelab-infra.tfstate
           retention-days: 90

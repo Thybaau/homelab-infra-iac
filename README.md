@@ -266,21 +266,21 @@ Terraform vous demandera confirmation. Tapez `yes` pour continuer.
 
 ### Configuration du Backend Terraform Local
 
-Le state Terraform est stocké localement sur le runner dans le répertoire de travail du workflow (`terraform-states/terraform.tfstate`).
+Le state Terraform est stocké de manière persistante sur le runner dans `/var/lib/terraform/states/homelab-infra.tfstate`.
 
 **Aucune configuration manuelle nécessaire !** Les workflows créent automatiquement les répertoires nécessaires.
 
 **Backups automatiques** :
-- À chaque `terraform apply`, le state est sauvegardé avec un timestamp dans `terraform-backups/`
+- À chaque `terraform apply`, le state est sauvegardé avec un timestamp dans `/var/lib/terraform/backups/`
 - Les 10 derniers backups sont conservés automatiquement
 - Un backup secondaire est uploadé comme artifact GitHub (90 jours)
 
 **Localisation des fichiers sur le runner** :
 ```
-{répertoire-de-travail-du-runner}/
-├── terraform-states/
-│   └── terraform.tfstate          # State principal
-└── terraform-backups/
+/var/lib/terraform/
+├── states/
+│   └── homelab-infra.tfstate     # State principal
+└── backups/
     ├── terraform.tfstate.20260217-143022
     ├── terraform.tfstate.20260217-150134
     └── ... (10 derniers backups)
@@ -289,17 +289,14 @@ Le state Terraform est stocké localement sur le runner dans le répertoire de t
 **Restaurer un backup** :
 ```bash
 # Se connecter au runner
-ssh runner@192.168.1.101
-
-# Aller dans le répertoire de travail du runner
-cd /path/to/runner/work/VOTRE-REPO/VOTRE-REPO
+ssh github@<runner-ip>
 
 # Voir les backups disponibles
-ls -lh terraform-backups/
+ls -lh /var/lib/terraform/backups/
 
 # Restaurer un backup spécifique
-cp terraform-backups/terraform.tfstate.20260217-143022 \
-   terraform-states/terraform.tfstate
+sudo cp /var/lib/terraform/backups/terraform.tfstate.20260217-143022 \
+        /var/lib/terraform/states/homelab-infra.tfstate
 ```
 
 ## 📊 Architecture de l'Infrastructure

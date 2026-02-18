@@ -27,7 +27,7 @@ jobs:
 
       - name: Verify State Exists
         run: |
-          if [ ! -f "terraform-states/terraform.tfstate" ]; then
+          if [ ! -f "/var/lib/terraform/states/homelab-infra.tfstate" ]; then
             echo "⚠️  Aucun state trouvé. Infrastructure probablement pas encore déployée."
             echo "Exécutez d'abord le workflow 'Terraform Apply'."
             exit 0
