@@ -48,6 +48,8 @@ jobs:
           script: |
             const output = `#### Terraform Plan 📋
 
+            **Status**: ${{ steps.plan.outcome }}
+
             \`\`\`
             ${{ steps.plan.outputs.stdout }}
             \`\`\`
@@ -60,3 +62,9 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      - name: Fail if Plan Failed
+        if: steps.plan.outcome == 'failure'
+        run: |
+          echo "❌ Terraform Plan a échoué. Vérifiez les logs ci-dessus."
+          exit 1
