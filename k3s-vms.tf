@@ -10,18 +10,22 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   clone = var.template_name
 
   # Ressources CPU/RAM
-  memory  = var.k3s_vm_memory
-  cores   = var.k3s_vm_cores
-  sockets = 1
+  memory = var.k3s_vm_memory
+  cpu {
+    cores   = var.k3s_vm_cores
+    sockets = 1
+  }
 
   # Démarrage automatique
-  onboot  = true
-  startup = "order=1"
+  start_at_node_boot = true
+  startup_shutdown {
+    order = 1
+  }
 
   # Disque
   disk {
-    slot    = 0
-    type    = "scsi"
+    slot    = "scsi0"
+    type    = "disk"
     storage = var.storage_pool
     size    = var.k3s_vm_disk_size
     format  = "qcow2"

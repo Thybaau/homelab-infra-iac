@@ -7,7 +7,7 @@ output "k3s_vms" {
       vmid       = vm.vmid
       ip_address = vm.default_ipv4_address
       memory     = vm.memory
-      cores      = vm.cores
+      cores      = var.k3s_vm_cores
       disk_size  = var.k3s_vm_disk_size
     }
   }
@@ -26,7 +26,7 @@ output "openclaw_vm" {
     vmid       = proxmox_vm_qemu.openclaw.vmid
     ip_address = proxmox_vm_qemu.openclaw.default_ipv4_address
     memory     = proxmox_vm_qemu.openclaw.memory
-    cores      = proxmox_vm_qemu.openclaw.cores
+    cores      = var.openclaw_vm_cores
     disk_size  = var.openclaw_vm_disk_size
   }
 }
