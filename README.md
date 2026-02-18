@@ -1,7 +1,7 @@
 # Infrastructure Terraform pour Proxmox VE
 
-[![Security Scan](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/security-scan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/security-scan.yml)
-[![Terraform Plan](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/terraform-plan.yml)
+[![Security Scan](https://github.com/Thybaau/homelab-infra-iac/actions/workflows/security-scan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/security-scan.yml)
+[![Terraform Plan](https://github.com/Thybaau/homelab-infra-iac/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/terraform-plan.yml)
 
 Infrastructure as Code (IaC) pour déployer automatiquement des machines virtuelles sur Proxmox VE 9.1.5. Ce projet permet de provisionner des VMs avec une intégration complète dans GitHub Actions.
 
