@@ -1,0 +1,38 @@
+# Exemple de fichier de variables Terraform
+# ⚠️ NE JAMAIS COMMIT le fichier terraform.tfvars
+
+# === Authentification Proxmox ===
+# Valeurs depuis l'interface Proxmox : Datacenter → Permissions → API Tokens
+proxmox_api_url          = "URL_INSTANCE_PROXMOX"
+proxmox_api_token_id     = "YOUR_API_TOKEN"
+proxmox_api_token_secret = "YOUR_TOKEN_SECRET"
+
+# === Configuration Proxmox ===
+proxmox_node = "PROXMOX_NODE_NAME"
+storage_pool = "POOL_NAME"
+
+# === Configuration Réseau ===
+network_bridge      = "vmbr0"
+network_gateway     = "GATEWAY_ADDRESS"
+network_dns         = "DNS_ADDRESS"
+network_subnet_mask = "255.255.255.0"
+
+# === VMs K3s ===
+k3s_count        = NUMBER_OF_K3S_VM
+k3s_vm_memory    = 4096  # Mo
+k3s_vm_cores     = 2
+k3s_vm_disk_size = "32G"
+k3s_vm_ip_start  = "FIRST_VM_IP"
+
+# === VM OpenClaw ===
+openclaw_vm_memory    = 4096  # Mo
+openclaw_vm_cores     = 2
+openclaw_vm_disk_size = "40G"
+openclaw_vm_ip        = "OPENCLAW_VM_IP"
+
+# === Cloud-Init ===
+# Remplacez par clé SSH publique (contenu dans ~/.ssh)
+ssh_public_key    = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@hostname"
+k3s_vm_user       = "k3s"
+openclaw_vm_user  = "openclaw"
+template_name     = "CLOUD-INIT_IMAGE_NAME"
