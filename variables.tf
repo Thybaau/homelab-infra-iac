@@ -122,11 +122,12 @@ variable "openclaw_vm_ip" {
 
 # === Configuration Cloud-Init ===
 
-# variable "ssh_public_keys" {
-#   type        = string
-#   description = "Clés SSH publiques pour l'accès aux VMs (une par ligne, seront injectées via Cloud-Init)"
-#   sensitive   = false
-# }
+variable "ssh_public_keys" {
+  type        = list(string)
+  description = "Liste des clés SSH publiques pour l'accès aux VMs (seront injectées via Cloud-Init)"
+  sensitive   = false
+  default     = []
+}
 
 variable "k3s_vm_user" {
   type        = string

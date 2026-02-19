@@ -22,17 +22,12 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      - name: Decode SSH Keys
+      - name: Set SSH Keys
         run: |
-          # Clés SSH en dur (temporaire pour debug)
-          cat > /tmp/ssh_keys.txt << 'SSHKEYS'
-          ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOaN2/18LzwHIvnwqU+uAwMskUh0KGNyp5hE8dzQjJrR thibault@DESKTOP-54EGL4C
-          ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINpfp++eT8Aw3tQJkHHTeTA+murV5sOMcx2GlFDwNcfF thibault.caremelle@teamwork.net
-          SSHKEYS
-          echo "TF_VAR_ssh_public_keys<<EOF" >> $GITHUB_ENV
-          cat /tmp/ssh_keys.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          rm /tmp/ssh_keys.txt
+          # Convertir la variable multi-lignes en format JSON liste pour Terraform
+          echo 'TF_VAR_ssh_public_keys<<EOF' >> $GITHUB_ENV
+          echo "${{ vars.SSH_PUBLIC_KEYS }}" | jq -R -s -c 'split("\n") | map(select(length > 0))' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
       - name: Terraform Init
         run: terraform init

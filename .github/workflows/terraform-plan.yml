@@ -26,13 +26,12 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      - name: Decode SSH Keys
+      - name: Set SSH Keys
         run: |
-          # Décoder les clés SSH URL-encodées et gérer les multi-lignes
-          DECODED_KEYS=$(echo "${{ secrets.SSH_PUBLIC_KEYS }}" | python3 -c "import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))")
-          echo "TF_VAR_ssh_public_keys<<EOF" >> $GITHUB_ENV
-          echo "$DECODED_KEYS" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          # Convertir la variable multi-lignes en format JSON liste pour Terraform
+          echo 'TF_VAR_ssh_public_keys<<EOF' >> $GITHUB_ENV
+          echo "${{ vars.SSH_PUBLIC_KEYS }}" | jq -R -s -c 'split("\n") | map(select(length > 0))' >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
