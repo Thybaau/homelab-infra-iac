@@ -14,6 +14,9 @@ resource "proxmox_vm_qemu" "openclaw" {
     sockets = 1
   }
 
+  # SCSI Controller
+  scsihw = "virtio-scsi-single"
+
   # Démarrage automatique
   start_at_node_boot = true
   startup_shutdown {
@@ -32,6 +35,17 @@ resource "proxmox_vm_qemu" "openclaw" {
 
   # Cloud-Init
   os_type = "cloud-init"
+  disk {
+    slot    = "ide2"
+    type    = "cloudinit"
+    storage = var.storage_pool
+  }
+
+  # Serial port pour console
+  serial {
+    id   = 0
+    type = "socket"
+  }
 
   # Réseau
   network {

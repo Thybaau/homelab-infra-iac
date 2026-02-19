@@ -16,6 +16,9 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
     sockets = 1
   }
 
+  # SCSI Controller
+  scsihw = "virtio-scsi-single"
+
   # Démarrage automatique
   start_at_node_boot = true
   startup_shutdown {
@@ -32,8 +35,21 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
     cache   = "writeback"
   }
 
+  # CloudInit Drive
+  disk {
+    slot    = "ide2"
+    type    = "cloudinit"
+    storage = var.storage_pool
+  }
+
   # Cloud-Init
   os_type = "cloud-init"
+
+  # Serial port pour console
+  serial {
+    id   = 0
+    type = "socket"
+  }
 
   # Réseau
   network {
