@@ -33,7 +33,7 @@ variable "proxmox_node" {
 variable "storage_pool" {
   type        = string
   description = "Pool de stockage Proxmox pour les disques des VMs"
-  default     = "ssd-vms"
+  default     = "local-lvm"
 }
 
 # === Configuration Réseau ===
@@ -122,11 +122,11 @@ variable "openclaw_vm_ip" {
 
 # === Configuration Cloud-Init ===
 
-variable "ssh_public_keys" {
-  type        = string
-  description = "Clés SSH publiques pour l'accès aux VMs (une par ligne, seront injectées via Cloud-Init)"
-  sensitive   = false
-}
+# variable "ssh_public_keys" {
+#   type        = string
+#   description = "Clés SSH publiques pour l'accès aux VMs (une par ligne, seront injectées via Cloud-Init)"
+#   sensitive   = false
+# }
 
 variable "k3s_vm_user" {
   type        = string
@@ -137,7 +137,7 @@ variable "k3s_vm_user" {
 variable "openclaw_vm_user" {
   type        = string
   description = "Nom d'utilisateur admin créé sur la VM OpenClaw via Cloud-Init"
-  default     = "admin"
+  default     = "openclaw"
 }
 
 variable "template_name" {
