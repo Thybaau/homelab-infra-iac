@@ -38,4 +38,5 @@ ssh_public_keys = [
 ]
 k3s_vm_user      = "k3s"
 openclaw_vm_user = "openclaw"
+vm_password      = "YOUR_SECURE_PASSWORD"
 template_name    = "CLOUD-INIT_IMAGE_NAME"

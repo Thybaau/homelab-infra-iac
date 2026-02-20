@@ -141,6 +141,12 @@ variable "openclaw_vm_user" {
   default     = "openclaw"
 }
 
+variable "vm_password" {
+  type        = string
+  description = "Mot de passe pour les utilisateurs des VMs (injecté via Cloud-Init)"
+  sensitive   = true
+}
+
 variable "template_name" {
   type        = string
   description = "Nom du template Ubuntu Cloud-Init dans Proxmox à cloner pour les VMs"
