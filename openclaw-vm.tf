@@ -17,6 +17,9 @@ resource "proxmox_vm_qemu" "openclaw" {
   # SCSI Controller
   scsihw = "virtio-scsi-single"
 
+  # QEMU Guest Agent
+  agent = 1
+
   # Démarrage automatique
   start_at_node_boot = true
   startup_shutdown {
