@@ -117,7 +117,7 @@ variable "openclaw_vm_disk_size" {
 variable "openclaw_vm_ip" {
   type        = string
   description = "Adresse IP statique pour la VM OpenClaw"
-  default     = "192.168.1.104"
+  default     = "192.168.1.150"
 }
 
 # === Configuration Cloud-Init ===
