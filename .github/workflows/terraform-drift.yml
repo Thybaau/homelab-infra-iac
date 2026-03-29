@@ -84,24 +84,24 @@ jobs:
             }
 
             const body = [
-              "Des modifications manuelles ont été détectées dans l'infrastructure Proxmox.",
+              "Modifications manuelles ont été détectées dans l'infrastructure Proxmox.",
               "",
-              "<details>",
-              "<summary>📋 Terraform Plan</summary>",
+              "### 📋 Terraform Plan",
               "",
               "```",
               planOutput,
               "```",
               "",
-              "</details>",
-              "",
               `🔗 [Voir le workflow](${runUrl})`
             ].join("\n");
+
+            const d = new Date();
+            const date = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
 
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: '⚠️ Configuration Drift Détecté',
+              title: `⚠️ Drift Détecté - ${date}`,
               body: body,
               labels: labels
             })
