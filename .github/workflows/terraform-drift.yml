@@ -46,21 +46,26 @@ jobs:
 
       - name: Terraform Plan (Drift Check)
         id: plan
-        run: terraform plan -detailed-exitcode -no-color
-        continue-on-error: true
+        run: |
+          set +e
+          terraform plan -detailed-exitcode -no-color
+          echo "exitcode=$?" >> $GITHUB_OUTPUT
 
       - name: Analyze Drift
         run: |
-          if [ ${{ steps.plan.outcome }} == 'failure' ]; then
+          if [ "${{ steps.plan.outputs.exitcode }}" == "2" ]; then
             echo "⚠️ DRIFT DÉTECTÉ! Des modifications manuelles ont été effectuées."
             echo "Consultez les logs ci-dessus pour les détails."
+            exit 1
+          elif [ "${{ steps.plan.outputs.exitcode }}" == "1" ]; then
+            echo "❌ Erreur lors du plan Terraform."
             exit 1
           else
             echo "✅ Aucune dérive détectée. Infrastructure conforme."
           fi
 
       - name: Create Issue on Drift
-        if: steps.plan.outcome == 'failure'
+        if: steps.plan.outputs.exitcode == '2'
         uses: actions/github-script@v7
         with:
           script: |
