@@ -9,11 +9,12 @@ env:
   TF_VAR_proxmox_api_url: ${{ secrets.PM_API_URL }}
   TF_VAR_proxmox_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
   TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
+  TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
 
 jobs:
   drift:
     name: Detect Configuration Drift
-    runs-on: self-hosted # OBLIGATOIRE: Proxmox n'est pas accessible depuis Internet
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -63,10 +64,27 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const labels = ['infrastructure', 'drift'];
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label
+                });
+              } catch {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                  color: label === 'drift' ? 'e11d48' : '0969da'
+                });
+              }
+            }
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '⚠️ Configuration Drift Détecté',
               body: 'Des modifications manuelles ont été détectées dans l\'infrastructure Proxmox. Consultez le workflow pour les détails.',
-              labels: ['infrastructure', 'drift']
+              labels: labels
             })
