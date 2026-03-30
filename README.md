@@ -5,14 +5,33 @@
 
 Projet Terraform pour le provisionnement automatisé de machines virtuelles sur Proxmox VE 9.1.5, déployé via des pipelines GitHub Actions.
 
+Actuellement, ce projet déploie deux VMs pour l'hébergement d'un cluster Kubernetes avec K3S, ainsi qu'une VM pour l'hébergement d'OpenClaw.
+
 ## ✨ Fonctionnalités
 
-- 📋 **Plan automatique** sur chaque Pull Request modifiant des fichiers `.tf`, avec commentaire du plan directement sur la PR
-- 🚀 **Déploiement** des VMs via workflow manuel (`terraform apply`)
-- 🔍 **Détection de drift** automatique tous les lundis à 8h — crée une issue GitHub avec le détail du plan si une dérive est détectée
-- 🗑️ **Destruction contrôlée** via workflow manuel avec confirmation obligatoire (`DESTROY`)
-- 🔒 **Scan de sécurité** automatique (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 2h
-- 💾 **Backup automatique** du state Terraform après chaque apply, avec rétention des 10 derniers backups
+- 🚀 Déploiement des VMs via workflow manuel (`terraform apply`)
+
+- 🔍 Détection de drift tous les lundis à 8h : crée une issue GitHub avec le détail du plan si une dérive est détectée.
+
+- 📋 Plan automatique sur Pull Request modifiant des fichiers `.tf`, avec commentaire du plan directement sur la PR
+
+- 🗑️ Destruction contrôlée via workflow manuel avec confirmation obligatoire (`DESTROY`)
+
+- 🔒 Scan de sécurité (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 2h
+
+## 🚀 Workflows GitHub Actions
+
+Ce projet utilise 5 workflows GitHub Actions pour gérer le cycle de vie de l'infrastructure :
+
+| Workflow | Déclenchement | Description |
+|----------|---------------|-------------|
+| Terraform Plan | PR sur fichiers `.tf` / Manuel | Prévisualise les changements et commente la PR |
+| Terraform Apply | Manuel | Déploie les VMs sur Proxmox |
+| Terraform Drift Detection | Cron (lundi 8h) / Manuel | Détecte les dérives et crée une issue GitHub |
+| Terraform Destroy | Manuel (confirmation `DESTROY`) | Supprime toutes les VMs |
+| Security Scan | Push / PR / Cron (lundi 2h) | Scan secrets, Terraform et dépendances |
+
+📖 Détails complets dans **[docs/github-workflows.md](docs/github-workflows.md)**
 
 ## 📊 Architecture Déploiement
 
@@ -46,83 +65,6 @@ Déploiement avec valeurs par défaut :
 │  Network: vmbr0 (192.168.1.0/24)                            │
 └─────────────────────────────────────────────────────────────┘
 ```
-
-
-## 🚀 Utilisation des Workflows GitHub Actions
-
-### 1. Terraform Plan
-
-**Objectif** : Prévisualiser les changements d'infrastructure sans les appliquer.
-
-**Déclenchement** :
-- Automatique sur les Pull Requests modifiant des fichiers `.tf`
-- Manuel via l'onglet **Actions** → **Terraform Plan** → **Run workflow**
-
-**Paramètres** : Aucun
-
-**Résultat** : Le plan est affiché dans les logs et commenté automatiquement sur la PR.
-
-### 2. Terraform Apply
-
-**Objectif** : Déployer l'infrastructure Proxmox automatiquement.
-
-**Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Apply** → **Run workflow**
-
-**Paramètres** : Aucun (les clés SSH sont automatiquement récupérées depuis le secret `SSH_PUBLIC_KEYS`)
-
-**Résultat** : Les VMs sont créées dans Proxmox et les IPs sont affichées dans les logs.
-
-### 3. Terraform Drift Detection
-
-**Objectif** : Détecter les modifications manuelles non documentées dans Proxmox.
-
-**Déclenchement** :
-- Automatique tous les lundis à 8h (cron)
-- Manuel via l'onglet **Actions** → **Terraform Drift Detection** → **Run workflow**
-
-**Paramètres** : Aucun
-
-**Résultat** : 
-- Si une dérive est détectée, une issue GitHub est créée automatiquement
-- Les différences sont affichées dans les logs
-
-### 4. Terraform Destroy
-
-**Objectif** : Détruire l'infrastructure de manière contrôlée.
-
-**Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Destroy** → **Run workflow**
-
-**Paramètres requis** :
-- `confirm_destroy` : Tapez exactement `DESTROY` pour confirmer
-
-**Résultat** : Toutes les VMs sont supprimées de Proxmox.
-
-⚠️ **ATTENTION** : Cette action est irréversible.
-
-### 5. Security Scan
-
-**Objectif** : Détecter les secrets en dur, vulnérabilités de sécurité et problèmes de configuration.
-
-**Déclenchement** :
-- Automatique sur push vers `main` ou `develop`
-- Automatique sur les Pull Requests
-- Automatique tous les lundis à 2h (cron)
-- Manuel via l'onglet **Actions** → **Security Scan** → **Run workflow**
-
-**Paramètres** : Aucun
-
-**Scans effectués** :
-- **TruffleHog** : Détection de secrets dans l'historique Git
-- **Gitleaks** : Détection de secrets et credentials
-- **tfsec** : Analyse de sécurité Terraform (misconfigurations, best practices)
-- **Checkov** : Scan de conformité et sécurité Terraform
-- **Trivy** : Scan de vulnérabilités dans les configurations
-- **Workflow Security** : Validation des workflows GitHub Actions
-
-**Résultat** : 
-- Les vulnérabilités sont affichées dans l'onglet **Security** de GitHub
-- Un rapport de sécurité est généré et disponible en artifact
-- Sur les PRs, un commentaire automatique résume les résultats
 
 ## 🔧 Variables Terraform
 
@@ -324,54 +266,13 @@ cp /var/lib/terraform/backups/terraform.tfstate.20260217-143022 \
 
 ## 🔒 Sécurité
 
-### Bonnes Pratiques Implémentées
+- Credentials Proxmox stockés dans GitHub Secrets
+- Variables sensibles marquées `sensitive = true` dans Terraform
+- Authentification SSH par clé uniquement (mot de passe désactivé)
+- Scan de sécurité automatique (secrets, Terraform, dépendances) via workflow CI
+- Scan local disponible via `./security-scan-local.sh` (nécessite Docker)
 
-- Les credentials Proxmox sont stockés dans GitHub Secrets (chiffrés)
-- Les variables sensibles sont marquées `sensitive = true` dans Terraform
-- L'authentification SSH par mot de passe est désactivée sur les VMs
-- Seule l'authentification par clé SSH est autorisée
-- Le certificat TLS auto-signé de Proxmox est accepté (`pm_tls_insecure = true`)
-
-### Scan de Sécurité Automatique
-
-Le workflow **Security Scan** s'exécute automatiquement pour détecter :
-
-1. **Secrets en dur** : Détection de tokens, mots de passe, clés API dans le code
-2. **Vulnérabilités Terraform** : Misconfigurations, non-respect des best practices
-3. **Problèmes de dépendances** : Vulnérabilités dans les providers Terraform
-4. **Sécurité des workflows** : Validation des GitHub Actions workflows
-
-### Fichiers de Configuration Sécurité
-
-- `.gitleaks.toml` : Configuration pour la détection de secrets
-- `.tfsec.yml` : Configuration pour le scan de sécurité Terraform
-- `.gitignore` : Exclusion des fichiers sensibles (`.tfvars`, `.tfstate`)
-
-### Consulter les Résultats de Sécurité
-
-1. Aller dans l'onglet **Security**
-2. Consulter **Code scanning alerts** pour les vulnérabilités détectées
-3. Téléchargez le rapport de sécurité depuis les artifacts du workflow
-
-### Scan de Sécurité Local
-
-Possibilité d'exécuter les scans de sécurité localement :
-
-```bash
-# Rendre le script exécutable (première fois uniquement)
-chmod +x security-scan-local.sh
-
-# Exécuter le script
-./security-scan-local.sh
-```
-
-Le script propose plusieurs options :
-1. **Tous les scans** : Exécute tous les outils de sécurité
-2. **Scan de secrets uniquement** : Gitleaks + TruffleHog
-3. **Scan Terraform uniquement** : tfsec + Checkov + Trivy
-4. **Scan rapide** : Gitleaks + tfsec (recommandé avant chaque commit)
-
-**Prérequis** : Docker doit être installé sur votre machine.
+📖 Détails complets : [SECURITY.md](SECURITY.md)
 
 ## 📝 Licence
 
