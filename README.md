@@ -3,7 +3,126 @@
 [![Security Scan](https://github.com/Thybaau/homelab-infra-iac/actions/workflows/security-scan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/security-scan.yml)
 [![Terraform Plan](https://github.com/Thybaau/homelab-infra-iac/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/terraform-plan.yml)
 
-Infrastructure as Code (IaC) pour déployer automatiquement des machines virtuelles sur Proxmox VE 9.1.5. Ce projet permet de provisionner des VMs avec une intégration complète dans GitHub Actions.
+Projet Terraform pour le provisionnement automatisé de machines virtuelles sur Proxmox VE 9.1.5, déployé via des pipelines GitHub Actions.
+
+## ✨ Fonctionnalités
+
+- 📋 **Plan automatique** sur chaque Pull Request modifiant des fichiers `.tf`, avec commentaire du plan directement sur la PR
+- 🚀 **Déploiement** des VMs via workflow manuel (`terraform apply`)
+- 🔍 **Détection de drift** automatique tous les lundis à 8h — crée une issue GitHub avec le détail du plan si une dérive est détectée
+- 🗑️ **Destruction contrôlée** via workflow manuel avec confirmation obligatoire (`DESTROY`)
+- 🔒 **Scan de sécurité** automatique (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 2h
+- 💾 **Backup automatique** du state Terraform après chaque apply, avec rétention des 10 derniers backups
+
+## 📊 Architecture Déploiement
+
+Déploiement avec valeurs par défaut :
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      GitHub Actions                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │ Terraform    │  │ Terraform    │  │   Drift      │       │
+│  │    Plan      │  │    Apply     │  │  Detection   │       │
+│  └──────────────┘  └──────────────┘  └──────────────┘       │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │ Self-hosted runner
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Proxmox VE 9.1.5                         │
+│                                                             │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
+│  │  k3s-node-01    │  │  k3s-node-02    │  │ openclaw-01 │  │
+│  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.104│  │
+│  │  4 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
+│  │  2 vCPUs        │  │  2 vCPUs        │  │  2 vCPUs    │  │
+│  │  32 Go SSD      │  │  32 Go SSD      │  │  40 Go SSD  │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────┘  │
+│                                                             │
+│  Storage: ssd-vms (125 Go)                                  │
+│  Network: vmbr0 (192.168.1.0/24)                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+
+## 🚀 Utilisation des Workflows GitHub Actions
+
+### 1. Terraform Plan
+
+**Objectif** : Prévisualiser les changements d'infrastructure sans les appliquer.
+
+**Déclenchement** :
+- Automatique sur les Pull Requests modifiant des fichiers `.tf`
+- Manuel via l'onglet **Actions** → **Terraform Plan** → **Run workflow**
+
+**Paramètres** : Aucun
+
+**Résultat** : Le plan est affiché dans les logs et commenté automatiquement sur la PR.
+
+### 2. Terraform Apply
+
+**Objectif** : Déployer l'infrastructure Proxmox automatiquement.
+
+**Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Apply** → **Run workflow**
+
+**Paramètres** : Aucun (les clés SSH sont automatiquement récupérées depuis le secret `SSH_PUBLIC_KEYS`)
+
+**Résultat** : Les VMs sont créées dans Proxmox et les IPs sont affichées dans les logs.
+
+### 3. Terraform Drift Detection
+
+**Objectif** : Détecter les modifications manuelles non documentées dans Proxmox.
+
+**Déclenchement** :
+- Automatique tous les lundis à 8h (cron)
+- Manuel via l'onglet **Actions** → **Terraform Drift Detection** → **Run workflow**
+
+**Paramètres** : Aucun
+
+**Résultat** : 
+- Si une dérive est détectée, une issue GitHub est créée automatiquement
+- Les différences sont affichées dans les logs
+
+### 4. Terraform Destroy
+
+**Objectif** : Détruire l'infrastructure de manière contrôlée.
+
+**Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Destroy** → **Run workflow**
+
+**Paramètres requis** :
+- `confirm_destroy` : Tapez exactement `DESTROY` pour confirmer
+
+**Résultat** : Toutes les VMs sont supprimées de Proxmox.
+
+⚠️ **ATTENTION** : Cette action est irréversible.
+
+### 5. Security Scan
+
+**Objectif** : Détecter les secrets en dur, vulnérabilités de sécurité et problèmes de configuration.
+
+**Déclenchement** :
+- Automatique sur push vers `main` ou `develop`
+- Automatique sur les Pull Requests
+- Automatique tous les lundis à 2h (cron)
+- Manuel via l'onglet **Actions** → **Security Scan** → **Run workflow**
+
+**Paramètres** : Aucun
+
+**Scans effectués** :
+- **TruffleHog** : Détection de secrets dans l'historique Git
+- **Gitleaks** : Détection de secrets et credentials
+- **tfsec** : Analyse de sécurité Terraform (misconfigurations, best practices)
+- **Checkov** : Scan de conformité et sécurité Terraform
+- **Trivy** : Scan de vulnérabilités dans les configurations
+- **Workflow Security** : Validation des workflows GitHub Actions
+
+**Résultat** : 
+- Les vulnérabilités sont affichées dans l'onglet **Security** de GitHub
+- Un rapport de sécurité est généré et disponible en artifact
+- Sur les PRs, un commentaire automatique résume les résultats
 
 ## 🔧 Variables Terraform
 
@@ -125,82 +244,6 @@ Résumé global de l'infrastructure :
 }
 ```
 
-## 🚀 Utilisation des Workflows GitHub Actions
-
-### 1. Terraform Plan
-
-**Objectif** : Prévisualiser les changements d'infrastructure sans les appliquer.
-
-**Déclenchement** :
-- Automatique sur les Pull Requests modifiant des fichiers `.tf`
-- Manuel via l'onglet **Actions** → **Terraform Plan** → **Run workflow**
-
-**Paramètres** : Aucun
-
-**Résultat** : Le plan est affiché dans les logs et commenté automatiquement sur la PR.
-
-### 2. Terraform Apply
-
-**Objectif** : Déployer l'infrastructure Proxmox automatiquement.
-
-**Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Apply** → **Run workflow**
-
-**Paramètres** : Aucun (les clés SSH sont automatiquement récupérées depuis le secret `SSH_PUBLIC_KEYS`)
-
-**Résultat** : Les VMs sont créées dans Proxmox et les IPs sont affichées dans les logs.
-
-### 3. Terraform Drift Detection
-
-**Objectif** : Détecter les modifications manuelles non documentées dans Proxmox.
-
-**Déclenchement** :
-- Automatique tous les lundis à 8h (cron)
-- Manuel via l'onglet **Actions** → **Terraform Drift Detection** → **Run workflow**
-
-**Paramètres** : Aucun
-
-**Résultat** : 
-- Si une dérive est détectée, une issue GitHub est créée automatiquement
-- Les différences sont affichées dans les logs
-
-### 4. Terraform Destroy
-
-**Objectif** : Détruire l'infrastructure de manière contrôlée.
-
-**Déclenchement** : Manuel uniquement via l'onglet **Actions** → **Terraform Destroy** → **Run workflow**
-
-**Paramètres requis** :
-- `confirm_destroy` : Tapez exactement `DESTROY` pour confirmer
-
-**Résultat** : Toutes les VMs sont supprimées de Proxmox.
-
-⚠️ **ATTENTION** : Cette action est irréversible !
-
-### 5. Security Scan
-
-**Objectif** : Détecter les secrets en dur, vulnérabilités de sécurité et problèmes de configuration.
-
-**Déclenchement** :
-- Automatique sur push vers `main` ou `develop`
-- Automatique sur les Pull Requests
-- Automatique tous les lundis à 2h (cron)
-- Manuel via l'onglet **Actions** → **Security Scan** → **Run workflow**
-
-**Paramètres** : Aucun
-
-**Scans effectués** :
-- **TruffleHog** : Détection de secrets dans l'historique Git
-- **Gitleaks** : Détection de secrets et credentials
-- **tfsec** : Analyse de sécurité Terraform (misconfigurations, best practices)
-- **Checkov** : Scan de conformité et sécurité Terraform
-- **Trivy** : Scan de vulnérabilités dans les configurations
-- **Workflow Security** : Validation des workflows GitHub Actions
-
-**Résultat** : 
-- Les vulnérabilités sont affichées dans l'onglet **Security** de GitHub
-- Un rapport de sécurité est généré et disponible en artifact
-- Sur les PRs, un commentaire automatique résume les résultats
-
 ## 💻 Exemples d'Utilisation
 
 ### Déploiement local avec Terraform
@@ -228,41 +271,9 @@ ssh_public_keys = [
 ]
 ```
 
-⚠️ **Ne commitez jamais ce fichier !** Il contient des informations sensibles.
+⚠️ **Ne jamais commit ce fichier** Il contient des informations sensibles.
 
 #### 3. Prévisualiser les changements
-
-```bash
-terraform plan
-```
-
-#### 4. Déployer l'infrastructure
-
-```bash
-terraform apply
-```
-
-Terraform vous demandera confirmation. Tapez `yes` pour continuer.
-
-#### 5. Afficher les outputs
-
-```bash
-terraform output
-```
-
-Ou au format JSON :
-
-```bash
-terraform output -json
-```
-
-### Détruire l'infrastructure localement
-
-```bash
-terraform destroy
-```
-
-Terraform vous demandera confirmation. Tapez `yes` pour continuer.
 
 ### Configuration du Backend Terraform Local
 
@@ -311,37 +322,6 @@ cp /var/lib/terraform/backups/terraform.tfstate.20260217-143022 \
    /var/lib/terraform/states/homelab-infra.tfstate
 ```
 
-## 📊 Architecture de l'Infrastructure
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      GitHub Actions                         │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │ Terraform    │  │ Terraform    │  │   Drift      │       │
-│  │    Plan      │  │    Apply     │  │  Detection   │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            │ Self-hosted runner
-                            │ (gh-runner-01)
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Proxmox VE 9.1.5                         │
-│                   (192.168.1.200)                           │
-│                                                             │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
-│  │  k3s-node-01    │  │  k3s-node-02    │  │ openclaw-01 │  │
-│  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.104│  │
-│  │  4 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
-│  │  2 vCPUs        │  │  2 vCPUs        │  │  2 vCPUs    │  │
-│  │  32 Go SSD      │  │  32 Go SSD      │  │  40 Go SSD  │  │
-│  └─────────────────┘  └─────────────────┘  └─────────────┘  │
-│                                                             │
-│  Storage: ssd-vms (125 Go)                                  │
-│  Network: vmbr0 (192.168.1.0/24)                            │
-└─────────────────────────────────────────────────────────────┘
-```
-
 ## 🔒 Sécurité
 
 ### Bonnes Pratiques Implémentées
@@ -367,28 +347,15 @@ Le workflow **Security Scan** s'exécute automatiquement pour détecter :
 - `.tfsec.yml` : Configuration pour le scan de sécurité Terraform
 - `.gitignore` : Exclusion des fichiers sensibles (`.tfvars`, `.tfstate`)
 
-### Recommandations
-
-⚠️ **Ne JAMAIS commit** :
-- Fichiers `terraform.tfvars` contenant des secrets
-- Fichiers `terraform.tfstate` ou `terraform.tfstate.backup`
-- Clés SSH privées
-- Tokens API ou credentials en dur dans le code
-
-✅ **Utiliser toujours** :
-- GitHub Secrets pour les informations sensibles
-- Variables Terraform avec `sensitive = true`
-- Fichiers `.tfvars.example` pour la documentation (avec valeurs fictives)
-
 ### Consulter les Résultats de Sécurité
 
-1. Allez dans l'onglet **Security**
-2. Consultez **Code scanning alerts** pour les vulnérabilités détectées
+1. Aller dans l'onglet **Security**
+2. Consulter **Code scanning alerts** pour les vulnérabilités détectées
 3. Téléchargez le rapport de sécurité depuis les artifacts du workflow
 
 ### Scan de Sécurité Local
 
-Vous pouvez exécuter les scans de sécurité localement avant de pousser le code :
+Possibilité d'exécuter les scans de sécurité localement :
 
 ```bash
 # Rendre le script exécutable (première fois uniquement)
