@@ -7,17 +7,29 @@ Projet Terraform pour le provisionnement automatisé de machines virtuelles sur 
 
 Actuellement, ce projet déploie deux VMs pour l'hébergement d'un cluster Kubernetes avec K3S, ainsi qu'une VM pour l'hébergement d'OpenClaw.
 
-## ✨ Fonctionnalités
+Le cluster Kubernetes est ensuite déployé via ce projet : https://github.com/Thybaau/homelab-cluster
 
-- 🚀 Déploiement des VMs via workflow manuel (`terraform apply`)
+- [Fonctionnalités](#-fonctionnalités)
+- [Workflows GitHub Actions](#-workflows-github-actions)
+- [Architecture Déploiement](#-architecture-déploiement)
+- [Variables Terraform](#-variables-terraform)
+- [Outputs Terraform](#-outputs-terraform)
+- [Configuration Backend Terraform](#configuration-backend-terraform-local)
+- [Sécurité](#-sécurité)
+- [Licence](#-licence)
+- [Ressources](#-ressources)
 
-- 🔍 Détection de drift tous les lundis à 8h : crée une issue GitHub avec le détail du plan si une dérive est détectée.
+## Fonctionnalités
 
-- 📋 Plan automatique sur Pull Request modifiant des fichiers `.tf`, avec commentaire du plan directement sur la PR
+- Déploiement des VMs via workflow manuel (`terraform apply`)
 
-- 🗑️ Destruction contrôlée via workflow manuel avec confirmation obligatoire (`DESTROY`)
+- Détection de drift tous les lundis à 8h : crée une issue GitHub avec le détail du plan si une dérive est détectée.
 
-- 🔒 Scan de sécurité (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 2h
+- Plan automatique sur Pull Request modifiant des fichiers `.tf`, avec commentaire du plan directement sur la PR
+
+- Destruction contrôlée via workflow manuel avec confirmation obligatoire (`DESTROY`)
+
+- Scan de sécurité (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 2h
 
 ## 🚀 Workflows GitHub Actions
 
