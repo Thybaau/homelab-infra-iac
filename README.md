@@ -68,67 +68,22 @@ Déploiement avec valeurs par défaut :
 
 ## 🔧 Variables Terraform
 
-Toutes les variables sont configurables pour adapter l'infrastructure à vos besoins.
+Toutes les variables sont configurables. Voir [`variables.tf`](variables.tf) et [`terraform.tfvars.example`](terraform.tfvars.example) pour les détails.
 
-### Variables d'authentification Proxmox
+| Groupe | Variables | Description |
+|--------|-----------|-------------|
+| Authentification | `proxmox_api_url`, `proxmox_api_token_id`, `proxmox_api_token_secret` | Connexion à l'API Proxmox (requis, sensitive) |
+| Proxmox | `proxmox_node`, `storage_pool` | Nœud cible et pool de stockage |
+| Réseau | `network_bridge`, `network_gateway`, `network_dns`, `network_subnet_mask` | Configuration réseau des VMs |
+| VMs K3s | `k3s_count`, `k3s_vm_memory`, `k3s_vm_cores`, `k3s_vm_disk_size`, `k3s_vm_ip_start` | Nombre, specs et adressage des nœuds K3s |
+| VM OpenClaw | `openclaw_vm_memory`, `openclaw_vm_cores`, `openclaw_vm_disk_size`, `openclaw_vm_ip` | Specs et IP de la VM OpenClaw |
+| Cloud-Init | `ssh_public_keys`, `k3s_vm_user`, `openclaw_vm_user`, `template_name` | Clés SSH, utilisateurs et template |
 
-| Variable | Type | Description | Requis |
-|----------|------|-------------|--------|
-| `proxmox_api_url` | string | URL de l'API Proxmox | ✅ |
-| `proxmox_api_token_id` | string | Token ID Proxmox (sensitive) | ✅ |
-| `proxmox_api_token_secret` | string | Secret du token Proxmox (sensitive) | ✅ |
-
-### Variables de configuration Proxmox
-
-| Variable | Type | Défaut | Description |
-|----------|------|--------|-------------|
-| `proxmox_node` | string | `"pve"` | Nom du nœud Proxmox |
-| `storage_pool` | string | `"ssd-vms"` | Pool de stockage pour les VMs |
-
-### Variables de configuration réseau
-
-| Variable | Type | Défaut | Description |
-|----------|------|--------|-------------|
-| `network_bridge` | string | `"vmbr0"` | Bridge réseau Proxmox |
-| `network_gateway` | string | `"192.168.1.1"` | Passerelle par défaut |
-| `network_dns` | string | `"1.1.1.1"` | Serveur DNS |
-| `network_subnet_mask` | string | `"255.255.255.0"` | Masque de sous-réseau |
-
-### Variables pour les VMs K3s
-
-| Variable | Type | Défaut | Description |
-|----------|------|--------|-------------|
-| `k3s_count` | number | `2` | Nombre de VMs K3s |
-| `k3s_vm_memory` | number | `4096` | RAM par VM K3s (Mo) |
-| `k3s_vm_cores` | number | `2` | Nombre de vCPUs par VM K3s |
-| `k3s_vm_disk_size` | string | `"32G"` | Taille du disque par VM K3s |
-| `k3s_vm_ip_start` | string | `"192.168.1.102"` | IP de départ pour les VMs K3s |
-
-### Variables pour la VM OpenClaw
-
-| Variable | Type | Défaut | Description |
-|----------|------|--------|-------------|
-| `openclaw_vm_memory` | number | `4096` | RAM VM OpenClaw (Mo) |
-| `openclaw_vm_cores` | number | `2` | Nombre de vCPUs VM OpenClaw |
-| `openclaw_vm_disk_size` | string | `"40G"` | Taille du disque VM OpenClaw |
-| `openclaw_vm_ip` | string | `"192.168.1.104"` | IP statique VM OpenClaw |
-
-### Variables Cloud-Init
-
-| Variable | Type | Défaut | Description |
-|----------|------|--------|-------------|
-| `ssh_public_keys` | list(string) | `[]` | Liste des clés SSH publiques pour l'accès aux VMs |
-| `k3s_vm_user` | string | `"k3s"` | Utilisateur admin des VMs K3s |
-| `openclaw_vm_user` | string | `"admin"` | Utilisateur admin de la VM OpenClaw |
-| `template_name` | string | `"ubuntu-22.04-cloudimg"` | Nom du template Ubuntu dans Proxmox |
+📖 Référence complète : [docs/terraform-reference.md](docs/terraform-reference.md)
 
 ## 📤 Outputs Terraform
 
-Après un déploiement réussi, Terraform affiche les informations suivantes :
-
-### `k3s_vms`
-
-Informations détaillées des VMs K3s :
+Après un déploiement réussi, Terraform affiche les informations de chaque VMs, exemple avec celles K3s :
 
 ```json
 {
@@ -149,32 +104,7 @@ Informations détaillées des VMs K3s :
 }
 ```
 
-### `k3s_ips`
-
-Liste des adresses IP des VMs K3s :
-
-```json
-["192.168.1.102", "192.168.1.103"]
-```
-
-### `openclaw_vm`
-
-Informations de la VM OpenClaw :
-
-```json
-{
-  "name": "openclaw-01",
-  "vmid": 210,
-  "ip_address": "192.168.1.104",
-  "memory": 4096,
-  "cores": 2,
-  "disk_size": "40G"
-}
-```
-
-### `all_vms_summary`
-
-Résumé global de l'infrastructure :
+Ainsi qu'un résumé global de l'infrastructure :
 
 ```json
 {
@@ -186,44 +116,13 @@ Résumé global de l'infrastructure :
 }
 ```
 
-## 💻 Exemples d'Utilisation
-
-### Déploiement local avec Terraform
-
-#### 1. Initialiser Terraform
-
-```bash
-terraform init
-```
-
-#### 2. Créer un fichier de variables
-
-Créez un fichier `terraform.tfvars` :
-
-```hcl
-# Authentification Proxmox
-proxmox_api_url          = "PROXMOX_INSTANCE_URL"
-proxmox_api_token_id     = "TOKEN_ID"
-proxmox_api_token_secret = "votre-secret-token"
-
-# Clés SSH (format liste - plusieurs clés possibles)
-ssh_public_keys = [
-  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOaN2/18LzwHIvnwqU+uAwMskUh0KGNyp5hE8dzQjJrR user1@hostname",
-  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINpfp++eT8Aw3tQJkHHTeTA+murV5sOMcx2GlFDwNcfF user2@hostname"
-]
-```
-
-⚠️ **Ne jamais commit ce fichier** Il contient des informations sensibles.
-
-#### 3. Prévisualiser les changements
-
-### Configuration du Backend Terraform Local
+## Configuration Backend Terraform Local
 
 Le state Terraform est stocké de manière persistante sur le runner dans `/var/lib/terraform/states/homelab-infra.tfstate`.
 
 **Configuration initiale requise (une seule fois):**
 
-Sur le runner GitHub Actions, exécutez ces commandes en tant que root:
+Sur le runner GitHub Actions, exécuter ces commandes en tant que root:
 
 ```bash
 # Créer les répertoires pour le state et les backups
