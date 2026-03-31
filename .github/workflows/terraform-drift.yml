@@ -84,7 +84,7 @@ jobs:
             }
 
             const body = [
-              "Modifications manuelles ont été détectées dans l'infrastructure Proxmox.",
+              "Des modifications manuelles ont été détectées dans l'infrastructure Proxmox.",
               "",
               "### 📋 Terraform Plan",
               "",

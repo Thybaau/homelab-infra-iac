@@ -2,12 +2,15 @@
 
 [![Security Scan](https://github.com/Thybaau/homelab-infra-iac/actions/workflows/security-scan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/security-scan.yml)
 [![Terraform Plan](https://github.com/Thybaau/homelab-infra-iac/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/VOTRE-USERNAME/VOTRE-REPO/actions/workflows/terraform-plan.yml)
+![Proxmox VE](https://img.shields.io/badge/Proxmox%20VE-9.1.5-E57000?logo=proxmox&logoColor=white)
 
-Projet Terraform pour le provisionnement automatisé de machines virtuelles sur Proxmox VE 9.1.5, déployé via des pipelines GitHub Actions.
+Projet Terraform pour le provisionnement automatisé de machines virtuelles sur Proxmox VE, déployé via des pipelines GitHub Actions.
 
 Actuellement, ce projet déploie deux VMs pour l'hébergement d'un cluster Kubernetes avec K3S, ainsi qu'une VM pour l'hébergement d'OpenClaw.
 
 Le cluster Kubernetes est ensuite déployé via ce projet : https://github.com/Thybaau/homelab-cluster
+
+## 📋 Table des Matières
 
 - [Fonctionnalités](#-fonctionnalités)
 - [Workflows GitHub Actions](#-workflows-github-actions)
@@ -19,7 +22,7 @@ Le cluster Kubernetes est ensuite déployé via ce projet : https://github.com/T
 - [Licence](#-licence)
 - [Ressources](#-ressources)
 
-## Fonctionnalités
+## 🚀 Fonctionnalités
 
 - Déploiement des VMs via workflow manuel (`terraform apply`)
 
@@ -29,9 +32,9 @@ Le cluster Kubernetes est ensuite déployé via ce projet : https://github.com/T
 
 - Destruction contrôlée via workflow manuel avec confirmation obligatoire (`DESTROY`)
 
-- Scan de sécurité (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 2h
+- Scan de sécurité (secrets, Terraform, dépendances) sur chaque push/PR + scan hebdomadaire le lundi à 8h
 
-## 🚀 Workflows GitHub Actions
+## 🤖 Workflows GitHub Actions
 
 Ce projet utilise 5 workflows GitHub Actions pour gérer le cycle de vie de l'infrastructure :
 
