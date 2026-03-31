@@ -69,6 +69,9 @@ Ce document décrit les workflows github actions. Les workflows Terraform sont e
 - Si une dérive est détectée, une issue GitHub est créée.
 - Les différences sont affichées dans les logs.
 
+Exemple d'issue GitHub créée en cas de drift :
+![issue_github](img/issue_github.png)
+
 ## 🗑️ Terraform Destroy
 
 **Objectif** : Détruire l'infrastructure de manière contrôlée.
