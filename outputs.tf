@@ -36,7 +36,7 @@ output "all_vms_summary" {
   description = "Résumé de toutes les VMs déployées"
   value = {
     total_vms    = var.k3s_count + 1
-    total_memory = (var.k3s_vm_memory * var.k3s_count) + var.openclaw_vm_memory
+    total_memory = var.k3s_master_memory + (var.k3s_worker_memory * (var.k3s_count - 1)) + var.openclaw_vm_memory
     total_cores  = (var.k3s_vm_cores * var.k3s_count) + var.openclaw_vm_cores
     storage_pool = var.storage_pool
     network      = var.network_bridge

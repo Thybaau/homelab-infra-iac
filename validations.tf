@@ -7,7 +7,7 @@
 # === Validation 1: RAM Totale ===
 # Vérifie que l'allocation totale de RAM ne dépasse pas 12 Go (14 Go - 2 Go marge)
 locals {
-  total_ram_mb = (var.k3s_vm_memory * var.k3s_count) + var.openclaw_vm_memory
+  total_ram_mb = var.k3s_master_memory + (var.k3s_worker_memory * (var.k3s_count - 1)) + var.openclaw_vm_memory
   max_ram_mb   = 12288 # 12 Go maximum (14 Go disponibles - 2 Go marge sécurité)
 }
 
@@ -23,13 +23,15 @@ resource "null_resource" "validate_ram" {
         Dépassement: ${local.total_ram_mb - local.max_ram_mb} Mo
         
         Configuration actuelle:
-        - VMs K3s: ${var.k3s_count} x ${var.k3s_vm_memory} Mo = ${var.k3s_count * var.k3s_vm_memory} Mo
+        - VM K3s master: ${var.k3s_master_memory} Mo
+        - VMs K3s worker: ${var.k3s_count - 1} x ${var.k3s_worker_memory} Mo = ${(var.k3s_count - 1) * var.k3s_worker_memory} Mo
         - VM OpenClaw: ${var.openclaw_vm_memory} Mo
         
         Solutions possibles:
-        1. Réduire k3s_vm_memory (actuellement ${var.k3s_vm_memory} Mo)
-        2. Réduire openclaw_vm_memory (actuellement ${var.openclaw_vm_memory} Mo)
-        3. Réduire k3s_count (actuellement ${var.k3s_count})
+        1. Réduire k3s_master_memory (actuellement ${var.k3s_master_memory} Mo)
+        2. Réduire k3s_worker_memory (actuellement ${var.k3s_worker_memory} Mo)
+        3. Réduire openclaw_vm_memory (actuellement ${var.openclaw_vm_memory} Mo)
+        4. Réduire k3s_count (actuellement ${var.k3s_count})
       EOT
     }
   }

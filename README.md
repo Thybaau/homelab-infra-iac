@@ -69,9 +69,9 @@ Déploiement avec valeurs par défaut :
 │                                                             │
 │                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
-│  │  k3s-node-01    │  │  k3s-node-02    │  │ openclaw-01 │  │
+│  │  k3s-master     │  │ k3s-worker-01   │  │ openclaw-01 │  │
 │  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.104│  │
-│  │  4 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
+│  │  6 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
 │  │  2 vCPUs        │  │  2 vCPUs        │  │  2 vCPUs    │  │
 │  │  32 Go SSD      │  │  32 Go SSD      │  │  40 Go SSD  │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────┘  │
@@ -90,7 +90,7 @@ Toutes les variables sont configurables. Voir [`variables.tf`](variables.tf) et 
 | Authentification | `proxmox_api_url`, `proxmox_api_token_id`, `proxmox_api_token_secret` | Connexion à l'API Proxmox (requis, sensitive) |
 | Proxmox | `proxmox_node`, `storage_pool` | Nœud cible et pool de stockage |
 | Réseau | `network_bridge`, `network_gateway`, `network_dns`, `network_subnet_mask` | Configuration réseau des VMs |
-| VMs K3s | `k3s_count`, `k3s_vm_memory`, `k3s_vm_cores`, `k3s_vm_disk_size`, `k3s_vm_ip_start` | Nombre, specs et adressage des nœuds K3s |
+| VMs K3s | `k3s_count`, `k3s_master_memory`, `k3s_worker_memory`, `k3s_vm_cores`, `k3s_vm_disk_size`, `k3s_vm_ip_start` | Nombre, specs et adressage des nœuds K3s |
 | VM OpenClaw | `openclaw_vm_memory`, `openclaw_vm_cores`, `openclaw_vm_disk_size`, `openclaw_vm_ip` | Specs et IP de la VM OpenClaw |
 | Cloud-Init | `ssh_public_keys`, `k3s_vm_user`, `openclaw_vm_user`, `template_name` | Clés SSH, utilisateurs et template |
 
@@ -102,14 +102,14 @@ Après un déploiement réussi, Terraform affiche les informations de chaque VMs
 
 ```json
 {
-  "k3s-node-01": {
+  "k3s-master": {
     "vmid": 200,
     "ip_address": "192.168.1.102",
-    "memory": 4096,
+    "memory": 6144,
     "cores": 2,
     "disk_size": "32G"
   },
-  "k3s-node-02": {
+  "k3s-worker-01": {
     "vmid": 201,
     "ip_address": "192.168.1.103",
     "memory": 4096,
@@ -124,7 +124,7 @@ Ainsi qu'un résumé global de l'infrastructure :
 ```json
 {
   "total_vms": 3,
-  "total_memory": 12288,
+  "total_memory": 14336,
   "total_cores": 6,
   "storage_pool": "ssd-vms",
   "network": "vmbr0"

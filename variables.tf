@@ -70,9 +70,15 @@ variable "k3s_count" {
   default     = 2
 }
 
-variable "k3s_vm_memory" {
+variable "k3s_master_memory" {
   type        = number
-  description = "Quantité de RAM allouée à chaque VM K3s en Mo"
+  description = "Quantité de RAM allouée à la VM K3s master en Mo"
+  default     = 6144
+}
+
+variable "k3s_worker_memory" {
+  type        = number
+  description = "Quantité de RAM allouée à chaque VM K3s worker en Mo"
   default     = 4096
 }
 

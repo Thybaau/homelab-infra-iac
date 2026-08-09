@@ -10,7 +10,7 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   clone = var.template_name
 
   # Ressources CPU/RAM
-  memory = var.k3s_vm_memory
+  memory = count.index == 0 ? var.k3s_master_memory : var.k3s_worker_memory
   cpu {
     cores   = var.k3s_vm_cores
     sockets = 1

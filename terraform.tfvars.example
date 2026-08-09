@@ -18,11 +18,12 @@ network_dns         = "DNS_ADDRESS"
 network_subnet_mask = "255.255.255.0"
 
 # === VMs K3s ===
-k3s_count        = NUMBER_OF_K3S_VM
-k3s_vm_memory    = 4096  # Mo
-k3s_vm_cores     = 2
-k3s_vm_disk_size = "32G"
-k3s_vm_ip_start  = "FIRST_VM_IP"
+k3s_count         = NUMBER_OF_K3S_VM
+k3s_master_memory = 6144  # Mo - RAM pour le nœud master (index 0)
+k3s_worker_memory = 4096  # Mo - RAM pour chaque nœud worker
+k3s_vm_cores      = 2
+k3s_vm_disk_size  = "32G"
+k3s_vm_ip_start   = "FIRST_VM_IP"
 
 # === VM OpenClaw ===
 openclaw_vm_memory    = 4096  # Mo

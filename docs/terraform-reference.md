@@ -40,7 +40,8 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 | Variable | Type | Défaut | Description |
 |----------|------|--------|-------------|
 | `k3s_count` | number | `2` | Nombre de VMs K3s |
-| `k3s_vm_memory` | number | `4096` | RAM par VM K3s (Mo) |
+| `k3s_master_memory` | number | `6144` | RAM du nœud master K3s (Mo) |
+| `k3s_worker_memory` | number | `4096` | RAM de chaque nœud worker K3s (Mo) |
 | `k3s_vm_cores` | number | `2` | Nombre de vCPUs par VM K3s |
 | `k3s_vm_disk_size` | string | `"32G"` | Taille du disque par VM K3s |
 | `k3s_vm_ip_start` | string | `"192.168.1.102"` | IP de départ pour les VMs K3s |
