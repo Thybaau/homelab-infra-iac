@@ -1,0 +1,86 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+  ],
+  schedule: [
+    'after 8pm every weekday',
+    'every weekend',
+    'before 8am every weekday',
+  ],
+  prHourlyLimit: 5,
+  prConcurrentLimit: 10,
+  labels: [
+    'renovate',
+  ],
+  dependencyDashboard: true,
+  packageRules: [
+    {
+      description: 'Automerge minor/patch updates pour les GitHub Actions',
+      matchManagers: [
+        'github-actions',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'digest',
+      ],
+      automerge: true,
+      automergeType: 'pr',
+      minimumReleaseAge: '3 days',
+    },
+    {
+      description: 'Automerge patch updates pour les Terraform providers',
+      matchManagers: [
+        'terraform',
+      ],
+      matchUpdateTypes: [
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'pr',
+      minimumReleaseAge: '7 days',
+    },
+    {
+      description: 'Major updates - review manuelle requise',
+      matchUpdateTypes: [
+        'major',
+      ],
+      automerge: false,
+      labels: [
+        'renovate',
+        'major-update',
+        'review-needed',
+      ],
+    },
+    {
+      description: 'Terraform provider Proxmox - review manuelle (infra critique)',
+      matchManagers: [
+        'terraform',
+      ],
+      matchPackageNames: [
+        'Telmate/proxmox',
+      ],
+      automerge: false,
+      labels: [
+        'renovate',
+        'infrastructure',
+        'review-needed',
+      ],
+      minimumReleaseAge: '14 days',
+    },
+    {
+      description: 'Security tools - groupe les updates ensemble',
+      matchManagers: [
+        'github-actions',
+      ],
+      matchPackageNames: [
+        'trufflesecurity/trufflehog',
+        'gitleaks/gitleaks-action',
+        'aquasecurity/trivy-action',
+        'bridgecrewio/checkov-action',
+      ],
+      groupName: 'security-tools',
+    },
+  ],
+}
