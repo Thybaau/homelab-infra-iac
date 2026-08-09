@@ -46,14 +46,14 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 | `k3s_vm_disk_size` | string | `"32G"` | Taille du disque par VM K3s |
 | `k3s_vm_ip_start` | string | `"192.168.1.102"` | IP de départ pour les VMs K3s |
 
-### Variables pour la VM OpenClaw
+### Variables pour la VM JAROD
 
 | Variable | Type | Défaut | Description |
 |----------|------|--------|-------------|
-| `openclaw_vm_memory` | number | `4096` | RAM VM OpenClaw (Mo) |
-| `openclaw_vm_cores` | number | `2` | Nombre de vCPUs VM OpenClaw |
-| `openclaw_vm_disk_size` | string | `"40G"` | Taille du disque VM OpenClaw |
-| `openclaw_vm_ip` | string | `"192.168.1.104"` | IP statique VM OpenClaw |
+| `jarod_vm_memory` | number | `4096` | RAM VM JAROD (Mo) |
+| `jarod_vm_cores` | number | `2` | Nombre de vCPUs VM JAROD |
+| `jarod_vm_disk_size` | string | `"40G"` | Taille du disque VM JAROD |
+| `jarod_vm_ip` | string | `"192.168.1.150"` | IP statique VM JAROD |
 
 ### Variables Cloud-Init
 
@@ -61,7 +61,7 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 |----------|------|--------|-------------|
 | `ssh_public_keys` | list(string) | `[]` | Liste des clés SSH publiques pour l'accès aux VMs |
 | `k3s_vm_user` | string | `"k3s"` | Utilisateur admin des VMs K3s |
-| `openclaw_vm_user` | string | `"admin"` | Utilisateur admin de la VM OpenClaw |
+| `jarod_vm_user` | string | `"jarod"` | Utilisateur admin de la VM JAROD |
 | `template_name` | string | `"ubuntu-22.04-cloudimg"` | Nom du template Ubuntu dans Proxmox |
 
 ## 📤 Outputs
@@ -99,15 +99,15 @@ Liste des adresses IP des VMs K3s :
 ["192.168.1.102", "192.168.1.103"]
 ```
 
-### `openclaw_vm`
+### `jarod_vm`
 
-Informations de la VM OpenClaw :
+Informations de la VM JAROD :
 
 ```json
 {
-  "name": "openclaw-01",
+  "name": "jarod-01",
   "vmid": 210,
-  "ip_address": "192.168.1.104",
+  "ip_address": "192.168.1.150",
   "memory": 4096,
   "cores": 2,
   "disk_size": "40G"

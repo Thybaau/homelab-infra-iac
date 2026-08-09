@@ -34,7 +34,7 @@
 #### VMs
 
 - **SSH par clé uniquement** : Authentification par mot de passe désactivée
-- **Utilisateurs dédiés** : Utilisateur `k3s` pour les VMs K3s, `admin` pour OpenClaw (créés via Cloud-Init)
+- **Utilisateurs dédiés** : Utilisateur `k3s` pour les VMs K3s, `jarod` pour JAROD (créés via Cloud-Init)
 - **Pas de root direct** : Connexion root SSH désactivée
 - **Clés SSH uniques** : Une clé SSH par utilisateur/environnement
 

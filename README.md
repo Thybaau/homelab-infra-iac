@@ -6,7 +6,7 @@
 
 Projet Terraform pour le provisionnement automatisé de machines virtuelles sur Proxmox VE, déployé via des pipelines GitHub Actions.
 
-Actuellement, ce projet déploie deux VMs pour l'hébergement d'un cluster Kubernetes avec K3S, ainsi qu'une VM pour l'hébergement d'OpenClaw.
+Actuellement, ce projet déploie deux VMs pour l'hébergement d'un cluster Kubernetes avec K3S, ainsi qu'une VM pour l'hébergement de JAROD (agent IA personnel).
 
 Le cluster Kubernetes est ensuite déployé via ce projet : https://github.com/Thybaau/homelab-cluster
 
@@ -69,8 +69,8 @@ Déploiement avec valeurs par défaut :
 │                                                             │
 │                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
-│  │  k3s-master     │  │ k3s-worker-01   │  │ openclaw-01 │  │
-│  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.104│  │
+│  │  k3s-master     │  │ k3s-worker-01   │  │  jarod-01   │  │
+│  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.150│  │
 │  │  6 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
 │  │  2 vCPUs        │  │  2 vCPUs        │  │  2 vCPUs    │  │
 │  │  32 Go SSD      │  │  32 Go SSD      │  │  40 Go SSD  │  │
@@ -91,8 +91,8 @@ Toutes les variables sont configurables. Voir [`variables.tf`](variables.tf) et 
 | Proxmox | `proxmox_node`, `storage_pool` | Nœud cible et pool de stockage |
 | Réseau | `network_bridge`, `network_gateway`, `network_dns`, `network_subnet_mask` | Configuration réseau des VMs |
 | VMs K3s | `k3s_count`, `k3s_master_memory`, `k3s_worker_memory`, `k3s_vm_cores`, `k3s_vm_disk_size`, `k3s_vm_ip_start` | Nombre, specs et adressage des nœuds K3s |
-| VM OpenClaw | `openclaw_vm_memory`, `openclaw_vm_cores`, `openclaw_vm_disk_size`, `openclaw_vm_ip` | Specs et IP de la VM OpenClaw |
-| Cloud-Init | `ssh_public_keys`, `k3s_vm_user`, `openclaw_vm_user`, `template_name` | Clés SSH, utilisateurs et template |
+| VM JAROD | `jarod_vm_memory`, `jarod_vm_cores`, `jarod_vm_disk_size`, `jarod_vm_ip` | Specs et IP de la VM JAROD |
+| Cloud-Init | `ssh_public_keys`, `k3s_vm_user`, `jarod_vm_user`, `template_name` | Clés SSH, utilisateurs et template |
 
 📖 Référence complète : [docs/terraform-reference.md](docs/terraform-reference.md)
 
