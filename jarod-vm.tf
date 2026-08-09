@@ -1,6 +1,6 @@
 resource "proxmox_vm_qemu" "jarod" {
   # Identification
-  name        = "jarod-01"
+  name        = "jarod-vm"
   target_node = var.proxmox_node
   vmid        = 210
 
