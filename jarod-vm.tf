@@ -1,6 +1,6 @@
-resource "proxmox_vm_qemu" "openclaw" {
+resource "proxmox_vm_qemu" "jarod" {
   # Identification
-  name        = "openclaw-01"
+  name        = "jarod-01"
   target_node = var.proxmox_node
   vmid        = 210
 
@@ -8,9 +8,9 @@ resource "proxmox_vm_qemu" "openclaw" {
   clone = var.template_name
 
   # Ressources
-  memory = var.openclaw_vm_memory
+  memory = var.jarod_vm_memory
   cpu {
-    cores   = var.openclaw_vm_cores
+    cores   = var.jarod_vm_cores
     sockets = 1
   }
 
@@ -31,7 +31,7 @@ resource "proxmox_vm_qemu" "openclaw" {
     slot    = "scsi0"
     type    = "disk"
     storage = var.storage_pool
-    size    = var.openclaw_vm_disk_size
+    size    = var.jarod_vm_disk_size
     format  = "qcow2"
     cache   = "writeback"
   }
@@ -58,12 +58,12 @@ resource "proxmox_vm_qemu" "openclaw" {
   }
 
   # Cloud-Init - Configuration réseau
-  ipconfig0 = "ip=${var.openclaw_vm_ip}/24,gw=${var.network_gateway}"
+  ipconfig0 = "ip=${var.jarod_vm_ip}/24,gw=${var.network_gateway}"
 
   nameserver = var.network_dns
 
   # Cloud-Init - Configuration utilisateur
-  ciuser     = var.openclaw_vm_user
+  ciuser     = var.jarod_vm_user
   cipassword = var.vm_password
   sshkeys    = join("\n", var.ssh_public_keys)
 

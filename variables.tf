@@ -100,29 +100,29 @@ variable "k3s_vm_ip_start" {
   default     = "192.168.1.102"
 }
 
-# === Configuration VM OpenClaw ===
+# === Configuration VM JAROD ===
 
-variable "openclaw_vm_memory" {
+variable "jarod_vm_memory" {
   type        = number
-  description = "Quantité de RAM allouée à la VM OpenClaw en Mo"
+  description = "Quantité de RAM allouée à la VM JAROD en Mo"
   default     = 4096
 }
 
-variable "openclaw_vm_cores" {
+variable "jarod_vm_cores" {
   type        = number
-  description = "Nombre de vCPUs alloués à la VM OpenClaw"
+  description = "Nombre de vCPUs alloués à la VM JAROD"
   default     = 2
 }
 
-variable "openclaw_vm_disk_size" {
+variable "jarod_vm_disk_size" {
   type        = string
-  description = "Taille du disque pour la VM OpenClaw (ex: 40G)"
+  description = "Taille du disque pour la VM JAROD (ex: 40G)"
   default     = "40G"
 }
 
-variable "openclaw_vm_ip" {
+variable "jarod_vm_ip" {
   type        = string
-  description = "Adresse IP statique pour la VM OpenClaw"
+  description = "Adresse IP statique pour la VM JAROD"
   default     = "192.168.1.150"
 }
 
@@ -141,10 +141,10 @@ variable "k3s_vm_user" {
   default     = "k3s"
 }
 
-variable "openclaw_vm_user" {
+variable "jarod_vm_user" {
   type        = string
-  description = "Nom d'utilisateur admin créé sur la VM OpenClaw via Cloud-Init"
-  default     = "openclaw"
+  description = "Nom d'utilisateur admin créé sur la VM JAROD via Cloud-Init"
+  default     = "jarod"
 }
 
 variable "vm_password" {
