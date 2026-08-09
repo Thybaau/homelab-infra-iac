@@ -69,7 +69,7 @@ Déploiement avec valeurs par défaut :
 │                                                             │
 │                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
-│  │  k3s-master     │  │ k3s-worker-01   │  │  jarod-01   │  │
+│  │  k3s-master     │  │ k3s-worker-01   │  │  jarod-vm   │  │
 │  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.150│  │
 │  │  6 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
 │  │  2 vCPUs        │  │  2 vCPUs        │  │  2 vCPUs    │  │
