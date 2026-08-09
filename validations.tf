@@ -5,10 +5,10 @@
 # respecte les contraintes matérielles du homelab (RAM, stockage, réseau)
 
 # === Validation 1: RAM Totale ===
-# Vérifie que l'allocation totale de RAM ne dépasse pas 12 Go (14 Go - 2 Go marge)
+# Vérifie que l'allocation totale de RAM ne dépasse pas 14 Go (16 Go - 2 Go marge)
 locals {
   total_ram_mb = var.k3s_master_memory + (var.k3s_worker_memory * (var.k3s_count - 1)) + var.openclaw_vm_memory
-  max_ram_mb   = 12288 # 12 Go maximum (14 Go disponibles - 2 Go marge sécurité)
+  max_ram_mb   = 14336 # 14 Go maximum (16 Go disponibles - 2 Go marge sécurité)
 }
 
 resource "null_resource" "validate_ram" {
