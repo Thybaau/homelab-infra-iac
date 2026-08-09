@@ -25,9 +25,11 @@
 #### Proxmox API
 
 - **Token API** : Utilisation de tokens API au lieu de mots de passe
-- **Permissions minimales** : Le token doit avoir uniquement les permissions nécessaires
+- **Permissions minimales** : Le token doit avoir uniquement les permissions nécessaires (éviter `root@pam`)
 - **Rotation régulière** : Changez les tokens API tous les 90 jours
-- **TLS** : Connexion HTTPS obligatoire (certificat auto-signé accepté en homelab)
+- **TLS** : Connexion HTTPS obligatoire
+
+> ⚠️ **Risque accepté** : `pm_tls_insecure = true` est activé car Proxmox utilise un certificat auto-signé en homelab. Cela expose à des attaques MITM sur le réseau local. Pour mitiger : importer le CA Proxmox dans le trust store du runner (`/usr/local/share/ca-certificates/`) et passer à `pm_tls_insecure = false`.
 
 #### VMs
 
@@ -40,16 +42,18 @@
 
 #### Terraform
 
-- **Provider version pinning** : Version du provider fixée (`~> 3.0`)
-- **Validation des contraintes** : Vérification des limites RAM/stockage avant déploiement
-- **State sécurisé** : Le state est stocké comme artifact GitHub (chiffré)
-- **Pas de secrets dans le state** : Les secrets sont référencés, pas stockés
+- **Provider version pinning** : Version du provider fixée (`3.0.2-rc07` — pré-release, à migrer vers une version stable dès disponible)
+- **Validation des contraintes** : Vérification des limites RAM/stockage/mot de passe avant déploiement
+- **State sécurisé** : Le state est stocké localement sur le runner self-hosted (`/var/lib/terraform/states/`)
+- **Attention** : Le state Terraform contient des secrets en clair (mots de passe VM, tokens). Ne jamais l'exposer comme artifact ou le commiter.
+
+> ⚠️ **Provider en RC** : `Telmate/proxmox 3.0.2-rc07` est une pré-release. Les RC ne bénéficient pas du même niveau d'audit de sécurité qu'une release stable. Migrer vers une version stable dès qu'elle est disponible.
 
 #### GitHub Actions
 
 - **Self-hosted runner** : Isolation réseau (Proxmox non accessible depuis Internet)
-- **Permissions minimales** : Chaque workflow a des permissions explicites
-- **Versions pinnées** : Actions GitHub utilisent des versions spécifiques
+- **Permissions minimales** : Chaque workflow a des permissions explicites (`contents: read` par défaut)
+- **Versions pinnées par SHA** : Actions GitHub épinglées par commit SHA pour prévenir les attaques supply-chain
 - **Secrets masqués** : Les secrets sont automatiquement masqués dans les logs
 
 ### 4. Scan de Sécurité Automatique
@@ -205,4 +209,4 @@ Pour toute question de sécurité, contactez les mainteneurs du projet via les c
 
 ---
 
-**Dernière mise à jour** : 2026-02-17
+**Dernière mise à jour** : 2026-08-09

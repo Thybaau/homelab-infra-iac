@@ -27,15 +27,16 @@ description = "Generic API Key"
 regex = '''(?i)(api[_-]?key|apikey|api[_-]?secret)['":\s]*[=:]\s*['"][0-9a-zA-Z\-_]{20,}['"]'''
 tags = ["api", "key"]
 
-# Fichiers à exclure du scan
+# Fichiers à exclure du scan (pas de secrets à détecter dedans, ou faux positifs)
 [allowlist]
 paths = [
     '''.terraform/''',
     '''.git/''',
-    '''terraform.tfstate''',
-    '''terraform.tfstate.backup''',
-    '''.*\.tfvars\.example''',
-    '''README.md''',
+    '''terraform\.tfstate''',
+    '''terraform\.tfstate\.backup''',
+    '''\.tfvars$''',
+    '''\.tfvars\.example$''',
+    '''README\.md''',
 ]
 
 # Patterns à ignorer (faux positifs)

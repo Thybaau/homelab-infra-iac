@@ -25,18 +25,32 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0 # Récupère tout l'historique pour scanner tous les commits
 
+      - name: Block sensitive files
+        run: |
+          echo "🔍 Vérification qu'aucun fichier sensible n'est présent dans le repo..."
+          FORBIDDEN=$(git ls-files | grep -E '\.tfvars$|\.tfstate$|\.tfstate\.' | grep -v '\.example$' || true)
+          if [ -n "$FORBIDDEN" ]; then
+            echo "❌ ERREUR: Fichiers sensibles détectés dans le repo !"
+            echo "$FORBIDDEN"
+            echo ""
+            echo "Ces fichiers ne doivent JAMAIS être commités. Retirez-les avec:"
+            echo "  git rm --cached <fichier>"
+            exit 1
+          fi
+          echo "✅ Aucun fichier sensible commité"
+
       - name: TruffleHog Secret Scan
-        uses: trufflesecurity/trufflehog@v3.88.8
+        uses: trufflesecurity/trufflehog@8cd2fdddd14a513cce30888e975d09233a61705c # v3.88.8
         with:
           path: ./
           extra_args: --debug --only-verified
 
       - name: Gitleaks Secret Scan
-        uses: gitleaks/gitleaks-action@v3
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
@@ -47,10 +61,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
         with:
           terraform_version: 1.5.0
 
@@ -73,7 +87,7 @@ jobs:
             --soft-fail > tfsec-results.sarif || true
 
       - name: Upload tfsec Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always() && hashFiles('tfsec-results.sarif') != ''
         with:
           name: tfsec-results
@@ -81,7 +95,7 @@ jobs:
           retention-days: 90
 
       - name: Checkov Terraform Scan
-        uses: bridgecrewio/checkov-action@v12
+        uses: bridgecrewio/checkov-action@9b70310bcd306d11740313070b940167d6b23085 # v12
         with:
           directory: .
           framework: terraform
@@ -95,10 +109,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.36.0
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
           scan-type: "config"
           scan-ref: "."
@@ -107,7 +121,7 @@ jobs:
           severity: "CRITICAL,HIGH,MEDIUM"
 
       - name: Upload Trivy Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: trivy-results
@@ -120,7 +134,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Validate GitHub Actions Workflows
         run: |
@@ -159,7 +173,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Generate Security Report
         run: |
@@ -189,7 +203,7 @@ jobs:
           cat security-report.md
 
       - name: Upload Security Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: security-report
           path: security-report.md
@@ -197,7 +211,7 @@ jobs:
 
       - name: Comment PR with Security Status
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const fs = require('fs');
