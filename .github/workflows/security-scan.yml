@@ -30,13 +30,13 @@ jobs:
           fetch-depth: 0 # Récupère tout l'historique pour scanner tous les commits
 
       - name: TruffleHog Secret Scan
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@v3.88.8
         with:
           path: ./
           extra_args: --debug --only-verified
 
       - name: Gitleaks Secret Scan
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
@@ -69,20 +69,19 @@ jobs:
           docker run --rm -v $(pwd):/src aquasec/tfsec:latest \
             /src \
             --format sarif \
-            --out tfsec-results.sarif \
             --minimum-severity MEDIUM \
-            --soft-fail || true
+            --soft-fail > tfsec-results.sarif || true
 
       - name: Upload tfsec Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('tfsec-results.sarif') != ''
         with:
           name: tfsec-results
           path: tfsec-results.sarif
           retention-days: 90
 
       - name: Checkov Terraform Scan
-        uses: bridgecrewio/checkov-action@master
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: .
           framework: terraform
@@ -99,7 +98,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: "config"
           scan-ref: "."
