@@ -74,7 +74,7 @@ jobs:
           echo ""
           terraform output k3s_ips
           echo ""
-          terraform output openclaw_vm
+          terraform output jarod_vm
 
       # ⚠️ State file NON uploadé comme artifact (contient des secrets en clair)
       # Le backup est géré localement sur le runner dans /var/lib/terraform/backups/
