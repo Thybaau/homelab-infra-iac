@@ -73,7 +73,7 @@ resource "null_resource" "validate_storage" {
 }
 
 # === Validation 3: Plages IP ===
-# Vérifie que les IPs sont hors de la plage DHCP (>= 192.168.1.102)
+# Vérifie que les IPs sont hors de la plage DHCP (>= 192.168.0.102)
 locals {
   # Extraction du dernier octet des IPs
   k3s_ip_start_last_octet = tonumber(split(".", var.k3s_vm_ip_start)[3])
@@ -93,10 +93,10 @@ resource "null_resource" "validate_k3s_ip_range" {
         Dernier octet: ${local.k3s_ip_start_last_octet}
         Minimum requis: ${local.min_ip_last_octet}
         
-        La plage DHCP est 192.168.1.1 à 192.168.1.101.
-        Les VMs doivent utiliser des IPs >= 192.168.1.102 pour éviter les conflits.
+        La plage DHCP est 192.168.0.1 à 192.168.0.101.
+        Les VMs doivent utiliser des IPs >= 192.168.0.102 pour éviter les conflits.
         
-        Solution: Définir k3s_vm_ip_start >= 192.168.1.102
+        Solution: Définir k3s_vm_ip_start >= 192.168.0.102
       EOT
     }
   }
@@ -113,10 +113,10 @@ resource "null_resource" "validate_jarod_ip_range" {
         Dernier octet: ${local.jarod_ip_last_octet}
         Minimum requis: ${local.min_ip_last_octet}
         
-        La plage DHCP est 192.168.1.1 à 192.168.1.101.
-        Les VMs doivent utiliser des IPs >= 192.168.1.102 pour éviter les conflits.
+        La plage DHCP est 192.168.0.1 à 192.168.0.101.
+        Les VMs doivent utiliser des IPs >= 192.168.0.102 pour éviter les conflits.
         
-        Solution: Définir jarod_vm_ip >= 192.168.1.102
+        Solution: Définir jarod_vm_ip >= 192.168.0.102
       EOT
     }
   }

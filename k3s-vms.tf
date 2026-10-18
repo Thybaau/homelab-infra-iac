@@ -62,7 +62,7 @@ resource "proxmox_vm_qemu" "k3s_nodes" {
   }
 
   # Cloud-Init - Configuration réseau
-  ipconfig0 = "ip=${cidrhost("192.168.1.0/24", 102 + count.index)}/24,gw=${var.network_gateway}"
+  ipconfig0 = "ip=${cidrhost("192.168.0.0/24", 102 + count.index)}/24,gw=${var.network_gateway}"
 
   nameserver = var.network_dns
 

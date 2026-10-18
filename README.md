@@ -70,14 +70,14 @@ Déploiement avec valeurs par défaut :
 │                                                             │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
 │  │  k3s-master     │  │ k3s-worker-01   │  │  jarod-vm   │  │
-│  │  192.168.1.102  │  │  192.168.1.103  │  │192.168.1.150│  │
+│  │  192.168.0.102  │  │  192.168.0.103  │  │192.168.0.150│  │
 │  │  6 Go RAM       │  │  4 Go RAM       │  │  4 Go RAM   │  │
 │  │  2 vCPUs        │  │  2 vCPUs        │  │  2 vCPUs    │  │
 │  │  32 Go SSD      │  │  32 Go SSD      │  │  40 Go SSD  │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────┘  │
 │                                                             │
 │  Storage: ssd-vms (125 Go)                                  │
-│  Network: vmbr0 (192.168.1.0/24)                            │
+│  Network: vmbr0 (192.168.0.0/24)                            │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -104,14 +104,14 @@ Après un déploiement réussi, Terraform affiche les informations de chaque VMs
 {
   "k3s-master": {
     "vmid": 200,
-    "ip_address": "192.168.1.102",
+    "ip_address": "192.168.0.102",
     "memory": 6144,
     "cores": 2,
     "disk_size": "32G"
   },
   "k3s-worker-01": {
     "vmid": 201,
-    "ip_address": "192.168.1.103",
+    "ip_address": "192.168.0.103",
     "memory": 4096,
     "cores": 2,
     "disk_size": "32G"

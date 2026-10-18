@@ -6,7 +6,7 @@
 
 variable "proxmox_api_url" {
   type        = string
-  description = "URL de l'API Proxmox (ex: https://192.168.1.200:8006/api2/json)"
+  description = "URL de l'API Proxmox (ex: https://192.168.0.200:8006/api2/json)"
   sensitive   = false
 }
 
@@ -47,7 +47,7 @@ variable "network_bridge" {
 variable "network_gateway" {
   type        = string
   description = "Passerelle par défaut pour les VMs"
-  default     = "192.168.1.1"
+  default     = "192.168.0.1"
 }
 
 variable "network_dns" {
@@ -97,7 +97,7 @@ variable "k3s_vm_disk_size" {
 variable "k3s_vm_ip_start" {
   type        = string
   description = "Adresse IP de départ pour les VMs K3s (les IPs suivantes seront séquentielles)"
-  default     = "192.168.1.102"
+  default     = "192.168.0.102"
 }
 
 # === Configuration VM JAROD ===
@@ -123,7 +123,7 @@ variable "jarod_vm_disk_size" {
 variable "jarod_vm_ip" {
   type        = string
   description = "Adresse IP statique pour la VM JAROD"
-  default     = "192.168.1.150"
+  default     = "192.168.0.150"
 }
 
 # === Configuration Cloud-Init ===

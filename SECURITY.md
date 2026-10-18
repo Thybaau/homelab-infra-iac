@@ -93,7 +93,7 @@ Le workflow **Security Scan** s'exécute automatiquement et inclut :
 
 ### 5. Réseau et Isolation
 
-- **Réseau privé** : Proxmox sur réseau local uniquement (192.168.1.0/24)
+- **Réseau privé** : Proxmox sur réseau local uniquement (192.168.0.0/24)
 - **Pas d'exposition Internet** : Aucun service exposé publiquement
 - **IPs statiques** : Hors plage DHCP pour éviter les conflits
 
