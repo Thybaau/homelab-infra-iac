@@ -31,7 +31,7 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 | Variable | Type | Défaut | Description |
 |----------|------|--------|-------------|
 | `network_bridge` | string | `"vmbr0"` | Bridge réseau Proxmox |
-| `network_gateway` | string | `"192.168.1.1"` | Passerelle par défaut |
+| `network_gateway` | string | `"192.168.0.1"` | Passerelle par défaut |
 | `network_dns` | string | `"1.1.1.1"` | Serveur DNS |
 | `network_subnet_mask` | string | `"255.255.255.0"` | Masque de sous-réseau |
 
@@ -44,7 +44,7 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 | `k3s_worker_memory` | number | `4096` | RAM de chaque nœud worker K3s (Mo) |
 | `k3s_vm_cores` | number | `2` | Nombre de vCPUs par VM K3s |
 | `k3s_vm_disk_size` | string | `"32G"` | Taille du disque par VM K3s |
-| `k3s_vm_ip_start` | string | `"192.168.1.102"` | IP de départ pour les VMs K3s |
+| `k3s_vm_ip_start` | string | `"192.168.0.102"` | IP de départ pour les VMs K3s |
 
 ### Variables pour la VM JAROD
 
@@ -53,7 +53,7 @@ Toutes les variables sont configurables pour adapter l'infrastructure à vos bes
 | `jarod_vm_memory` | number | `4096` | RAM VM JAROD (Mo) |
 | `jarod_vm_cores` | number | `2` | Nombre de vCPUs VM JAROD |
 | `jarod_vm_disk_size` | string | `"40G"` | Taille du disque VM JAROD |
-| `jarod_vm_ip` | string | `"192.168.1.150"` | IP statique VM JAROD |
+| `jarod_vm_ip` | string | `"192.168.0.150"` | IP statique VM JAROD |
 
 ### Variables Cloud-Init
 
@@ -76,14 +76,14 @@ Informations détaillées des VMs K3s :
 {
   "k3s-node-01": {
     "vmid": 200,
-    "ip_address": "192.168.1.102",
+    "ip_address": "192.168.0.102",
     "memory": 4096,
     "cores": 2,
     "disk_size": "32G"
   },
   "k3s-node-02": {
     "vmid": 201,
-    "ip_address": "192.168.1.103",
+    "ip_address": "192.168.0.103",
     "memory": 4096,
     "cores": 2,
     "disk_size": "32G"
@@ -96,7 +96,7 @@ Informations détaillées des VMs K3s :
 Liste des adresses IP des VMs K3s :
 
 ```json
-["192.168.1.102", "192.168.1.103"]
+["192.168.0.102", "192.168.0.103"]
 ```
 
 ### `jarod_vm`
@@ -107,7 +107,7 @@ Informations de la VM JAROD :
 {
   "name": "jarod-01",
   "vmid": 210,
-  "ip_address": "192.168.1.150",
+  "ip_address": "192.168.0.150",
   "memory": 4096,
   "cores": 2,
   "disk_size": "40G"
