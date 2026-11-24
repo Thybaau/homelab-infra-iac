@@ -96,7 +96,7 @@ jobs:
           retention-days: 90
 
       - name: Checkov Terraform Scan
-        uses: bridgecrewio/checkov-action@9b70310bcd306d11740313070b940167d6b23085 # v12
+        uses: bridgecrewio/checkov-action@d4770c1ac4a966d8c3305b79c348c26232123aa1 # v12
         with:
           directory: .
           framework: terraform
